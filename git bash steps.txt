@@ -1,0 +1,8 @@
+1. git config --global user.name "Ravil180904"
+2. git config --global user.email "ravil.moldabaev09@gmail.com"
+3. git clone (for example https://github.com/Ravil180904/World-of-programming.git)
+4. cd folder name
+5. git status
+6. git add .
+7. git commit -m ""
+8. git push origin main
