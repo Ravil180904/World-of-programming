@@ -1,0 +1,151 @@
+1.
+Беседа № 64: 
+
+Sure, let's go through all the functions in the code:
+
+1. pygame.init():
+   - This function initializes the Pygame library and its subsystems.
+   - It must be called before using any other Pygame functions.
+
+2. pygame.time.Clock():
+   - This function creates a new clock object.
+   - The clock object is used to control the frame rate of the game.
+
+3. pygame.font.SysFont(name, size):
+   - This function creates a new font object from the system fonts.
+   - The name parameter specifies the font name, and the size parameter specifies the font size in pixels.
+
+4. font.render(text, antialias, color):
+   - This method renders the given text onto a new surface using the current font.
+   - The antialias parameter determines whether anti-aliasing (smoothing of edges) should be applied or not.
+   - The color parameter specifies the color of the text.
+
+5. pygame.image.load(file_path):
+   - This function loads an image from the specified file_path.
+   - It returns a new surface object with the image data.
+
+6. surface.get_rect():
+   - This method returns a new rectangle object that perfectly encloses the surface.
+   - The rectangle object has attributes like left, right, top, bottom, center, etc., which can be used to position the surface on the screen.
+
+7. pygame.key.get_pressed():
+   - This function returns a list of boolean values representing the state of each key on the keyboard.
+   - If a key is pressed, its corresponding boolean value in the list is True, otherwise False.
+
+8. rect.move_ip(x, y):
+   - This method moves the rectangle object by the given x and y offsets, in-place.
+   - The _ip suffix stands for "in-place", meaning that the original rectangle is modified.
+
+9. pygame.sprite.spritecollideany(sprite, group):
+   - This function checks if the given sprite collides with any sprite in the group.
+   - If a collision is detected, it returns the first sprite from the group that collides with the given sprite.
+   - Otherwise, it returns None.
+
+10. pygame.mixer.Sound(file_path).play():
+    - This function loads a sound from the specified file_path and plays it.
+
+11. time.sleep(seconds):
+    - This function suspends the execution of the current thread for the specified number of seconds.
+
+12. surface.fill(color):
+    - This method fills the entire surface with the specified color.
+
+13. surface.blit(source, dest):
+    - This method draws the source surface onto the current surface at the dest position.
+    - The source can be another surface, a rectangle, or an object with a rect attribute.
+    - The dest is a tuple or rectangle specifying the position on the current surface.
+
+14. pygame.display.update():
+    - This function updates the entire display surface with the changes made since the last update.
+
+15. clock.tick(fps):
+    - This method delays the game loop to ensure that the game runs at the desired fps (frames per second).
+    - It returns the number of milliseconds since the last call to tick().
+
+16. pygame.time.set_timer(event_type, milliseconds):
+    - This function schedules a new event of the specified event_type to be generated every milliseconds.
+    - The event_type should be a unique constant, typically created using pygame.USEREVENT + n.
+
+17. sprite.kill():
+    - This method removes the sprite from all sprite groups it belongs to.
+
+18. pygame.quit():
+    - This function uninitializes all Pygame modules and quits the Pygame library.
+
+19. sys.exit():
+    - This function exits the Python interpreter immediately.
+
+2.
+Беседа № 64: 
+
+Sure, let's go through each function/method used in this part of the code:
+
+1. pygame.display.update():
+   - This function updates the entire display surface with the changes made since the last update.
+   - It takes the contents of the video memory and transfers them to the display screen.
+   - It should be called after all the drawing operations are completed for a frame.
+
+2. DISPLAYSURF.blit(background, (0, 0)):
+   - This line uses the blit method to draw the background image onto the DISPLAYSURF surface at the coordinates (0, 0), which is the top-left corner.
+   - The blit method stands for "blit" or "block transfer," which means transferring a portion of one surface onto another.
+
+3. for entity in all_sprites::
+   - This is a loop that iterates over each sprite in the all_sprites group.
+
+4. entity.move():
+   - This line calls the move method of each sprite (entity) in the all_sprites group.
+   - The move method is responsible for updating the position of the sprite based on its movement logic.
+
+5. DISPLAYSURF.blit(entity.image, entity.rect):
+   - This line uses the blit method to draw the image of each sprite (entity) onto the DISPLAYSURF surface at the position specified by the sprite's rect (rectangle).
+
+6. pygame.sprite.spritecollideany(P1, enemies):
+   - This function checks if the P1 sprite (the player) collides with any sprite in the enemies group.
+   - If a collision is detected, it returns the first sprite from the enemies group that collides with P1.
+
+7. pygame.mixer.Sound("C:\\Users\\Darya\\Documents\\programming-principles-2\\lab8\\Racer\\crash.wav").play():
+   - This line loads the sound file located at the specified path and plays it.
+   - It is executed when a collision between the player and an enemy is detected.
+
+8. time.sleep(1):
+   - This line pauses the execution of the program for 1 second.
+   - It is called after playing the crash sound to create a brief pause.
+
+9. DISPLAYSURF.fill(RED):
+   - This line fills the entire DISPLAYSURF surface with the RED color.
+   - It is executed after the pause, presumably to display a red background for the "Game over" message.
+
+10. DISPLAYSURF.blit(game_over, (30, 250)):
+    - This line draws the game_over text surface onto the DISPLAYSURF surface at the coordinates (30, 250).
+
+11. pygame.display.update():
+    - This line updates the display surface with the changes made (i.e., the red background and the "Game over" text).
+
+12. for entity in all_sprites: entity.kill():
+    - This loop iterates over each sprite in the all_sprites group and calls the kill method on each sprite.
+    - The kill method removes the sprite from all sprite groups it belongs to, effectively removing it from the game.
+
+13. time.sleep(2):
+    - This line pauses the execution of the program for 2 seconds after the "Game over" message is displayed.
+
+14. pygame.quit():
+    - This function uninitializes all Pygame modules and quits the Pygame library.
+
+15. sys.exit():
+    - This function exits the Python interpreter immediately, terminating the program.
+
+16. increase_speed(E1, C1):
+    - This line calls the increase_speed function, passing the E1 (Enemy instance) and C1 (Coin instance) as arguments.
+    - The purpose of this function is to update the enemy speed and display it on the screen.
+
+17. pygame.display.update():
+    - This line updates the display surface again, reflecting any changes made by the increase_speed function.
+
+18. FramePerSec.tick(FPS):
+    - This line calls the tick method of the FramePerSec clock object.
+    - The tick method delays the game loop to maintain the desired FPS (frames per second) rate.
+    - It ensures that the game runs at a consistent frame rate, preventing it from running too fast or too slow.
+
+This part of the code handles the game loop, drawing sprites, checking for collisions between the player and enemies, displaying the "Game over" message and exiting the game when a collision occurs, updating the enemy speed, and regulating the frame rate.
+
+5209 из 16384

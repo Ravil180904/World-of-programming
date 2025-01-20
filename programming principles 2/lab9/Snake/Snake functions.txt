@@ -1,0 +1,103 @@
+1.
+
+Беседа № 69: 
+
+Sure, I'll explain each function in the provided code:
+
+1. draw_grid():
+   - This function draws a grid on the game window.
+   - It uses nested loops to iterate over the width and height of the window, divided by the size of each cell (CELL).
+   - For each cell, it draws a rectangle with the color colorGRAY and a line thickness of 1 pixel.
+
+2. draw_grid_chess():
+   - This function draws a chessboard-like grid on the game window.
+   - It uses nested loops to iterate over the width and height of the window, divided by the size of each cell (CELL).
+   - For each cell, it alternates between the colors colorWHITE and colorGRAY based on the sum of the row and column indices ((i + j) % 2).
+   - This creates a checkerboard pattern.
+
+3. Point class:
+   - This is a simple class to store x and y coordinates.
+   - It has an __init__ method that takes x and y values and assigns them to the self.x and self.y attributes, respectively.
+
+4. Snake class:
+   - This class represents the snake in the game.
+   - The __init__ method initializes the snake's body as a list of Point objects, sets the initial direction, and resets the score.
+   - The move method updates the position of each segment of the snake's body based on the current direction (self.dx and self.dy).
+   - The draw method draws the snake on the game window. It draws the head in red and the rest of the body in yellow.
+   - The check_border_collision method checks if the snake's head has collided with the window borders.
+   - The check_collision_food method checks if the snake's head has collided with the food object. If so, it grows the snake by adding a new segment and increases the score.
+
+5. Level class:
+   - This class handles the game levels and difficulty.
+   - The __init__ method initializes the current level, the number of foods required to advance to the next level, and the speed increaser value.
+   - The check_level_up method checks if the snake's score has reached the required score to advance to the next level. If so, it increases the current level, adjusts the number of foods required for the next level, and increases the game speed (FPS).
+
+6. Food class:
+   - This class represents the food that the snake needs to eat.
+   - The __init__ method takes the snake object as an argument, initializes the food with different weights and colors, and generates a new random position for the food.
+   - The generate_new_position method finds a random position on the grid that doesn't overlap with the snake's body and assigns a random color to the food based on the defined weights.
+   - The draw method draws the food on the game window using the assigned color.
+
+The main() function (not shown in the provided code) would contain the game loop, event handling, updating the game state, and rendering the game objects on the screen.
+
+2456 из 16384
+
+2.
+
+Беседа № 69: 
+
+Sure, let me explain each function in the provided code:
+
+1. draw_grid():
+   - This function draws a grid on the game window.
+   - It uses nested loops to iterate over the height and width of the window, divided by the size of each cell (CELL).
+   - For each cell, it draws a rectangle with the color colorGRAY and a line thickness of 1 pixel.
+
+2. draw_grid_chess():
+   - This function draws a chessboard-like grid on the game window.
+   - It uses nested loops to iterate over the height and width of the window, divided by the size of each cell (CELL).
+   - For each cell, it alternates between the colors colorWHITE and colorGRAY based on the sum of the row and column indices ((i + j) % 2).
+   - This creates a checkerboard pattern.
+
+3. draw_counter_score(snake, level):
+   - This function renders the current score and level text on the game window.
+   - It creates two text surfaces using the score_counter font: one for the score and one for the level.
+   - The screen.blit() function is used to draw these text surfaces onto the game window at the specified coordinates (10, 10) and (10, 30), respectively.
+
+4. Point class:
+   - This is a simple class to store x and y coordinates.
+   - It has an __init__ method that takes x and y values and assigns them to the self.x and self.y attributes, respectively.
+
+5. Snake class:
+   - This class represents the snake in the game.
+   - The __init__ method initializes the snake's body as a list of Point objects, sets the initial direction, and resets the score.
+   - The move method updates the position of each segment of the snake's body based on the current direction (self.dx and self.dy).
+   - The draw method draws the snake on the game window. It draws the head in red and the rest of the body in yellow.
+   - The check_border_collision method checks if the snake's head has collided with the window borders.
+   - The check_collision_food method checks if the snake's head has collided with the food object. If so, it grows the snake by adding a new segment and increases the score.
+
+6. Level class:
+   - This class handles the game levels and difficulty.
+   - The __init__ method initializes the current level, the number of foods required to advance to the next level, and the speed increaser value.
+   - The check_level_up method checks if the snake's score has reached the required score to advance to the next level. If so, it increases the current level, adjusts the number of foods required for the next level, and increases the game speed (FPS).
+
+7. Food class:
+   - This class represents the food that the snake needs to eat.
+   - The __init__ method takes the snake object as an argument, initializes the food with different weights and colors, and generates a new random position for the food.
+   - The generate_new_position method finds a random position on the grid that doesn't overlap with the snake's body and assigns a random color to the food based on the defined weights.
+   - The draw method draws the food on the game window using the assigned color.
+
+8. main() function:
+   - This function contains the main game loop.
+   - It initializes the done flag, creates instances of the Snake, Level, and Food classes, and enters the game loop.
+   - Inside the loop, it handles events such as quitting the game or changing the snake's direction.
+   - It draws the chessboard-like grid, moves and draws the snake, and draws the food.
+   - It checks for border collisions, regenerates the food if the timer has expired, and checks for food collision.
+   - If a food collision occurs, it generates a new food position and checks if the required score is reached to advance to the next level.
+   - It calls draw_counter_score(snake, level) to display the current score and level on the window.
+   - It updates the display using pygame.display.flip().
+   - It controls the frame rate using clock.tick(FPS).
+
+The main() function is the entry point of the game and contains the main game loop, event handling, and the logic for updating the game state and rendering the objects on the screen.
+
+4348 из 16384
