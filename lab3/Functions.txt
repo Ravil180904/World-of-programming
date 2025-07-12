@@ -1,0 +1,191 @@
+1. Беседа № 73: 
+
+In Python, the isalnum() method is a built-in string method that returns True if all characters in the string are alphanumeric (either alphabets or digits), 
+and False otherwise.
+
+Syntax:
+
+string.isalnum()
+
+Here, string is the string on which the method is called.
+
+Example 1: String containing only alphabets and digits
+
+text = "Hello123"
+print(text.isalnum())  # Output: True
+
+Example 2: String containing special characters
+
+text = "Hello@123"
+print(text.isalnum())  # Output: False
+
+In the second example, the string contains a special character @, so isalnum() returns False.
+
+Example 3: Check if a string is alphanumeric using a loop
+
+def is_alphanumeric(string):
+    for char in string:
+        if not char.isalnum():
+            return False
+    return True
+
+print(is_alphanumeric("Hello123"))  # Output: True
+print(is_alphanumeric("Hello@123"))  # Output: False
+
+In this example, we define a custom function is_alphanumeric() that checks if each character in the string is alphanumeric using a loop and the isalnum() method. 
+If any non-alphanumeric character is found, the function returns False. Otherwise, it returns True.
+
+Note that the isalnum() method considers whitespace characters (such as spaces, tabs, and newlines) as non-alphanumeric characters. 
+If you want to treat them as alphanumeric, you can modify the string before checking or use an alternative approach.
+
+350 из 16384
+
+
+
+
+2. 
+Беседа № 73: 
+
+In Python, the append() function is a list method used to add a new element to the end of an existing list.
+
+Syntax:
+
+list.append(element)
+
+Here, list is the list to which the element will be appended.
+
+Example 1: Appending a single element
+
+fruits = ['apple', 'banana', 'cherry']
+fruits.append('orange')
+print(fruits)  # Output: ['apple', 'banana', 'cherry', 'orange']
+
+Example 2: Appending a list to another list
+
+numbers = [1, 2, 3]
+more_numbers = [4, 5]
+numbers.append(more_numbers)
+print(numbers)  # Output: [1, 2, 3, [4, 5]]
+
+In the second example, the entire list [4, 5] is appended as a single element to the numbers list.
+
+Example 3: Appending multiple elements using a loop
+
+letters = ['a', 'b', 'c']
+new_letters = ['d', 'e', 'f']
+for letter in new_letters:
+    letters.append(letter)
+print(letters)  # Output: ['a', 'b', 'c', 'd', 'e', 'f']
+
+In this example, we use a loop to append each element from the new_letters list to the letters list.
+
+Important Notes:
+
+- The append() method modifies the original list by adding the new element to the end.
+- If you want to add an element at a specific position in the list, you can use the insert() method instead.
+- If you want to concatenate two lists, you can use the + operator or the extend() method.
+
+The append() method is a convenient way to add new elements to the end of a list dynamically, as lists are mutable in Python. 
+It is commonly used in various scenarios, such as building lists dynamically or modifying existing lists based on certain conditions.
+
+787 из 16384
+
+
+3.
+Беседа № 73: 
+
+In Python, the split() method is a built-in string method that splits a string into a list of substrings based on a specified delimiter.
+
+Syntax:
+
+string.split(separator, maxsplit)
+
+- separator (optional): The string used to split the original string. If not provided, any whitespace character (space, newline, tab, etc.) is used as the delimiter.
+- maxsplit (optional): An integer that specifies the maximum number of splits to perform. If not provided or set to -1, the string is split as many times as possible.
+
+Return Value:
+
+The split() method returns a list of substrings after splitting the original string by the specified delimiter.
+
+Example 1: Splitting a string by whitespace
+
+text = "Hello, world! This is Python."
+words = text.split()
+print(words)  # Output: ['Hello,', 'world!', 'This', 'is', 'Python.']
+
+Example 2: Splitting a string by a specific delimiter
+
+date_string = "2023-05-15"
+date_parts = date_string.split("-")
+print(date_parts)  # Output: ['2023', '05', '15']
+
+Example 3: Using maxsplit to limit the number of splits
+
+url = "https://www.example.com/path/to/file.html"
+parts = url.split("/", 3)
+print(parts)  # Output: ['https:', '', 'www.example.com', 'path/to/file.html']
+
+In the third example, the maxsplit parameter is set to 3, so the string is split at most 3 times, resulting in a list with 4 elements.
+
+Important Notes:
+
+- If the delimiter is not found in the string, the split() method returns a list containing the original string as its only element.
+- If you want to split a string based on multiple delimiters, you can use the re.split() function from the re module (regular expressions).
+- The split() method creates a new list and does not modify the original string, as strings are immutable in Python.
+
+The split() method is widely used for various tasks, such as parsing data, processing user input, manipulating file paths, and more. 
+It provides a convenient way to break down strings into smaller components based on specified delimiters.
+
+1287 из 16384
+
+
+4.
+Беседа № 73: 
+
+In Python, the lower() method is a built-in string method that returns a new string with all the characters converted to lowercase.
+
+Syntax:
+
+string.lower()
+
+Return Value:
+
+The lower() method returns a new string with all the characters converted to lowercase. The original string remains unchanged.
+
+Example 1: Converting a string to lowercase
+
+text = "Hello, World!"
+lowercase_text = text.lower()
+print(lowercase_text)  # Output: hello, world!
+
+Example 2: Lowercase conversion before string comparison
+
+user_input = "Python"
+if user_input.lower() == "python":
+    print("Correct!")
+else:
+    print("Incorrect.")
+
+In this example, the lower() method is used to convert the user input to lowercase before comparing it with the string "python". 
+This ensures that the comparison is case-insensitive.
+
+Important Notes:
+
+- The lower() method only converts alphabetic characters to lowercase. Non-alphabetic characters, such as digits, punctuation marks, 
+and whitespace characters, remain unchanged.
+- If the string already consists entirely of lowercase characters, the lower() method returns the original string.
+- The lower() method creates a new string and does not modify the original string, as strings are immutable in Python.
+- There is a corresponding upper() method that converts all characters in a string to uppercase.
+
+The lower() method is commonly used in various scenarios, such as:
+
+- Data validation and normalization, where user input needs to be converted to a consistent case before processing.
+- Text processing and manipulation, where case-insensitive operations are required.
+- String comparisons, where case-insensitive matching is desired.
+- Data cleaning and preprocessing, where text data needs to be converted to a consistent format.
+
+By using the lower() method, you can ensure that string comparisons and operations are performed consistently, 
+regardless of the original case of the characters in the string.
+
+1905 из 16384
+
