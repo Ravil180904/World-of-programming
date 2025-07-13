@@ -1,0 +1,169 @@
+Task 1: import numpy as np
+import matplotlib.pyplot as plt
+
+def quadratic_function(x):
+    return x ** 2
+
+def gradient(x):
+    return 2 * x
+
+def gradient_descent(starting_point, learning_rate, iterations):
+    x = starting_point
+    path = [x]
+    for _ in range(iterations):
+        x = x - learning_rate * gradient(x)
+        path.append(x)
+    return path
+
+def plot_results(starting_point, learning_rate, iterations):
+    path = gradient_descent(starting_point, learning_rate, iterations)
+    x = np.linspace(-10, 10, 400)
+    y = quadratic_function(x)
+
+    plt.figure(figsize=(14, 6))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(x, y, label="f(x) = x^2")
+    plt.plot(path, quadratic_function(np.array(path)), marker='o', color='red', label="Gradient Descent Path")
+    plt.xlabel("x")
+    plt.ylabel("f(x)")
+    plt.title("Gradient Descent Path on Quadratic Function")
+    plt.legend()
+    plt.grid(True)
+
+    plt.subplot(1, 2, 2)
+    plt.plot(range(iterations + 1), quadratic_function(np.array(path)), marker='o', color='red', label="Loss")
+    plt.xlabel("Iteration")
+    plt.ylabel("Loss")
+    plt.title("Loss Evolution Across Iterations")
+    plt.legend()
+    plt.grid(True)
+
+    plt.show()
+
+if __name__ == "__main__":
+    starting_point = 10
+    learning_rate = 0.1
+    iterations = 50
+
+    plot_results(starting_point, learning_rate, iterations)
+
+Task 2: 
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def function_2d(x, y):
+    return x**2 + y**2
+
+def gradient_2d(x, y):
+    return np.array([2*x, 2*y])
+
+def gradient_descent_2d(starting_point, learning_rate, iterations):
+    path = [starting_point]
+    point = np.array(starting_point)
+    for _ in range(iterations):
+        grad = gradient_2d(point[0], point[1])
+        point = point - learning_rate * grad
+        path.append(point.copy())
+    return np.array(path)
+
+def plot_results_2d(starting_point, learning_rate, iterations):
+    path = gradient_descent_2d(starting_point, learning_rate, iterations)
+    x = np.linspace(-10, 10, 400)
+    y = np.linspace(-10, 10, 400)
+    X, Y = np.meshgrid(x, y)
+    Z = function_2d(X, Y)
+
+    plt.figure(figsize=(14, 6))
+
+    # Contour plot
+    plt.subplot(1, 2, 1)
+    plt.contour(X, Y, Z, levels=np.logspace(-0.5, 3, 20), cmap='jet')
+    plt.plot(path[:, 0], path[:, 1], marker='o', color='red', label="Gradient Descent Path")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Gradient Descent Path on Contour Plot")
+    plt.legend()
+    plt.grid(True)
+
+    # Loss evolution
+    plt.subplot(1, 2, 2)
+    losses = [function_2d(p[0], p[1]) for p in path]
+    plt.plot(range(iterations + 1), losses, marker='o', color='red', label="Loss")
+    plt.xlabel("Iteration")
+    plt.ylabel("Loss")
+    plt.title("Loss Evolution Across Iterations")
+    plt.legend()
+    plt.grid(True)
+
+    plt.show()
+
+if __name__ == "__main__":
+    starting_point = [8, 8]
+    learning_rate = 0.1
+    iterations = 50
+
+    plot_results_2d(starting_point, learning_rate, iterations)
+
+
+Task 3:
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Generate synthetic dataset
+np.random.seed(42)
+X = 2 * np.random.rand(100, 1)
+y = 3 * X + 5 + np.random.randn(100, 1)
+
+# Function for batch gradient descent
+def batch_gradient_descent(X, y, learning_rate, iterations):
+    m = len(y)
+    X_b = np.c_[np.ones((m, 1)), X]  # add x0 = 1 to each instance
+    theta = np.random.randn(2, 1)  # random initialization
+    for iteration in range(iterations):
+        gradients = 2/m * X_b.T.dot(X_b.dot(theta) - y)
+        theta = theta - learning_rate * gradients
+    return theta
+
+# Function for stochastic gradient descent
+def stochastic_gradient_descent(X, y, learning_rate, iterations):
+    m = len(y)
+    X_b = np.c_[np.ones((m, 1)), X]  # add x0 = 1 to each instance
+    theta = np.random.randn(2, 1)  # random initialization
+    for epoch in range(iterations):
+        for i in range(m):
+            random_index = np.random.randint(m)
+            xi = X_b[random_index:random_index+1]
+            yi = y[random_index:random_index+1]
+            gradients = 2 * xi.T.dot(xi.dot(theta) - yi)
+            theta = theta - learning_rate * gradients
+    return theta
+
+# Function to plot the results
+def plot_results(X, y, theta_bgd, theta_sgd):
+    plt.plot(X, y, "b.")
+    plt.plot(X, X_b.dot(theta_bgd), "r-", linewidth=2, label="Batch Gradient Descent")
+    plt.plot(X, X_b.dot(theta_sgd), "g-", linewidth=2, label="Stochastic Gradient Descent")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Linear Regression with Gradient Descent Methods")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+if __name__ == "__main__":
+    # Get user inputs
+    learning_rate_bgd = float(input("Enter the learning rate for batch gradient descent: "))
+    learning_rate_sgd = float(input("Enter the learning rate for stochastic gradient descent: "))
+    iterations = int(input("Enter the number of iterations: "))
+
+    # Run gradient descent
+    theta_bgd = batch_gradient_descent(X, y, learning_rate_bgd, iterations)
+    theta_sgd = stochastic_gradient_descent(X, y, learning_rate_sgd, iterations)
+
+    # Plot results
+    X_b = np.c_[np.ones((len(X), 1)), X]
+    plot_results(X, y, theta_bgd, theta_sgd)
+
