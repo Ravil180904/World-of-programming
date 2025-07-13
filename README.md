@@ -1,10 +1,9 @@
 # Project Title
 
-A brief, compelling description of your project.  
-For example: _Dynamic Stability Analysis of Nonlinear Systems using MATLAB Simulations._
+A brief, compelling description of my projects. 
+This repository for programming in different languages and tools for self improving.
 
 ---
-
 ## Features
 
 - Nonlinear system modeling with equilibrium point analysis  
