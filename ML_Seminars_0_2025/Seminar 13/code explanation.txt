@@ -1,0 +1,2679 @@
+First code:
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import BaggingRegressor
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.datasets import fetch_california_housing
+from sklearn.tree import DecisionTreeRegressor, plot_tree, DecisionTreeClassifier
+from sklearn.svm import SVR
+from sklearn.datasets import make_regression
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.metrics import mean_squared_error, accuracy_score, r2_score
+cmap = plt.get_cmap('Set3')
+from pypalettes import get_hex
+from pypalettes import load_cmap
+import warnings
+warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+
+Certainly! Here’s a step-by-step explanation of the code you provided:
+
+---
+
+### 1. Importing Python Libraries
+
+#### a) **Numpy**
+```python
+import numpy as np
+```
+- **Purpose:** Provides support for large, multi-dimensional arrays and matrices, along with mathematical functions to operate on them.
+
+#### b) **Pandas**
+```python
+import pandas as pd
+```
+- **Purpose:** Used for data manipulation and analysis, especially with tabular data (think: spreadsheets, CSV files).
+
+#### c) **Matplotlib (pyplot)**
+```python
+import matplotlib.pyplot as plt
+```
+- **Purpose:** Used for plotting graphs and visualizations.
+
+#### d) **Seaborn**
+```python
+import seaborn as sns
+```
+- **Purpose:** Based on Matplotlib, it makes attractive statistical plots easily.
+
+---
+
+### 2. Importing Scikit-learn Tools (Machine Learning)
+
+#### a) **Linear Regression Model**
+```python
+from sklearn.linear_model import LinearRegression
+```
+- **Purpose:** Implements Linear Regression for predictive modeling.
+
+#### b) **Bagging Regressor**
+```python
+from sklearn.ensemble import BaggingRegressor
+```
+- **Purpose:** Implements Bagging (Bootstrap Aggregating) for regression, an ensemble method to improve stability and accuracy.
+
+#### c) **Train/Test Split & Cross-Validation**
+```python
+from sklearn.model_selection import train_test_split, cross_val_score
+```
+- **Purpose:** 
+  - `train_test_split` splits data into training and testing sets.
+  - `cross_val_score` performs cross-validation for model evaluation.
+
+#### d) **California Housing Dataset**
+```python
+from sklearn.datasets import fetch_california_housing
+```
+- **Purpose:** Loads a sample dataset about California housing prices (useful for regression tasks).
+
+#### e) **Decision Tree Models**
+```python
+from sklearn.tree import DecisionTreeRegressor, plot_tree, DecisionTreeClassifier
+```
+- **Purpose:** 
+  - `DecisionTreeRegressor`: Decision tree for regression tasks.
+  - `plot_tree`: Visualizes the structure of decision trees.
+  - `DecisionTreeClassifier`: Decision tree for classification tasks.
+
+#### f) **Support Vector Regression**
+```python
+from sklearn.svm import SVR
+```
+- **Purpose:** Implements Support Vector Regression, a powerful regression algorithm.
+
+#### g) **Synthetic Regression Dataset**
+```python
+from sklearn.datasets import make_regression
+```
+- **Purpose:** Allows you to generate a synthetic regression dataset for testing algorithms.
+
+#### h) **K-Nearest Neighbors Regressor**
+```python
+from sklearn.neighbors import KNeighborsRegressor
+```
+- **Purpose:** Implements the KNN algorithm for regression.
+
+#### i) **Model Evaluation Metrics**
+```python
+from sklearn.metrics import mean_squared_error, accuracy_score, r2_score
+```
+- **Purpose:** 
+  - `mean_squared_error`: Measures average squared difference between estimated and actual values.
+  - `accuracy_score`: Computes accuracy of classification models.
+  - `r2_score`: Coefficient of determination, measures goodness of fit for regression.
+
+---
+
+### 3. Colormap for Plots
+
+```python
+cmap = plt.get_cmap('Set3')
+```
+- **Purpose:** Sets a categorical color map named 'Set3', which can be used for colorful plotting.
+
+---
+
+### 4. **pypalettes** Library (for Colors)
+
+```python
+from pypalettes import get_hex
+from pypalettes import load_cmap
+```
+- **Purpose:** 
+  - `get_hex`: Get hexadecimal color codes.
+  - `load_cmap`: Load a colormap, often used for consistent color schemes in visualizations.
+
+---
+
+### 5. **Warnings Handling**
+
+```python
+import warnings
+warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
+```
+- **Purpose:** Suppresses `PendingDeprecationWarning` warnings so they do not clutter your output.
+
+---
+
+## **Summary**
+
+- **This code sets up the environment for a machine learning/data science workflow.**
+- It imports popular libraries for:
+  - Data manipulation (numpy, pandas)
+  - Visualization (matplotlib, seaborn, pypalettes)
+  - Machine learning (scikit-learn models, metrics, datasets)
+- It also configures a color map for plots and suppresses some warnings for cleaner output.
+
+**No actual data processing or modeling happens here — these are just the imports and configuration you’d use at the start of a typical data science script!**
+
+Second code:
+dataset = fetch_california_housing(as_frame=True)
+#Firstly I will get some information about this dataset, so we can understand how to work with it
+print(dataset.DESCR)
+dataset.data.head()
+
+Here’s a step-by-step explanation of the code you provided:
+
+---
+
+### 1. **Load the California Housing Dataset**
+```python
+dataset = fetch_california_housing(as_frame=True)
+```
+- **Purpose:**  
+  This line loads the California Housing dataset from scikit-learn’s built-in datasets.
+- **Details:**  
+  - `fetch_california_housing()` is a function that downloads the dataset if it’s not already present.
+  - `as_frame=True` means the data will be returned as a pandas DataFrame (which is easier to work with for data analysis).
+
+---
+
+### 2. **Print Dataset Description**
+```python
+print(dataset.DESCR)
+```
+- **Purpose:**  
+  Prints a detailed description of the California Housing dataset.
+- **What it includes:**  
+  - Information about each feature (column) in the dataset
+  - The target variable (what you’re trying to predict)
+  - Source and citation information
+  - Any other useful context about the dataset
+
+---
+
+### 3. **Preview the Data**
+```python
+dataset.data.head()
+```
+- **Purpose:**  
+  Displays the first five rows of the dataset in tabular form.
+- **Details:**  
+  - `.data` is a DataFrame containing the features (columns) of the dataset (not the target variable).
+  - `.head()` is a pandas method that shows the first 5 rows by default.
+  - This step helps you quickly understand what the data looks like and what columns are available.
+
+---
+
+### **Summary**
+
+1. **Loads** the California Housing data as a pandas DataFrame.
+2. **Prints** a detailed description to help you understand what the dataset is about.
+3. **Shows** the first few rows of the data so you can see its structure and features.
+
+**These steps are typically the first ones you perform in any data science or machine learning project to explore and understand your data before further analysis or modeling.**
+
+Third code:
+df = pd.DataFrame(data=dataset.data, columns=dataset.feature_names)
+df['MedHouseVal'] = dataset.target
+
+plt.figure(figsize = (10,10))
+sns.scatterplot(x = 'MedHouseVal', y = 'MedInc', data = df, s = 1, c = 'green')
+
+filtered_df = df[df['AveBedrms'] <= 8]
+plt.figure(figsize = (10,10))
+sns.scatterplot(x = 'AveBedrms', y = 'MedInc', data = filtered_df, s = 3, c = 'green', alpha = 0.4)
+
+Here’s a step-by-step explanation of what’s happening in your code:
+
+---
+
+### 1. **Create a DataFrame from the Dataset**
+```python
+df = pd.DataFrame(data=dataset.data, columns=dataset.feature_names)
+df['MedHouseVal'] = dataset.target
+```
+- **Purpose:**  
+  - `dataset.data` contains the feature values (as a DataFrame or array).
+  - `dataset.feature_names` lists the names of each feature (column).
+  - `df` is now a pandas DataFrame with each feature as a column.
+  - `'MedHouseVal'` (the median house value, your target variable) is added as a new column using `dataset.target`.
+
+---
+
+### 2. **Scatter Plot: Median House Value vs. Median Income**
+```python
+plt.figure(figsize = (10,10))
+sns.scatterplot(x = 'MedHouseVal', y = 'MedInc', data = df, s = 1, c = 'green')
+```
+- **Purpose:**  
+  - Sets up a new plot with a 10x10 inch canvas.
+  - Plots a scatterplot using seaborn:
+    - X-axis: `'MedHouseVal'` (median house value)
+    - Y-axis: `'MedInc'` (median income)
+    - Each point size = 1 (`s = 1`), color = green (`c = 'green'`).
+- **Why?**  
+  - This visualizes the relationship between house value and median income.
+
+---
+
+### 3. **Filter the DataFrame**
+```python
+filtered_df = df[df['AveBedrms'] <= 8]
+```
+- **Purpose:**  
+  - Creates a new DataFrame called `filtered_df` that only contains rows where the average number of bedrooms (`AveBedrms`) is less than or equal to 8.
+- **Why?**  
+  - This removes outliers or extreme values that might skew the next plot.
+
+---
+
+### 4. **Scatter Plot: Average Bedrooms vs. Median Income (Filtered)**
+```python
+plt.figure(figsize = (10,10))
+sns.scatterplot(x = 'AveBedrms', y = 'MedInc', data = filtered_df, s = 3, c = 'green', alpha = 0.4)
+```
+- **Purpose:**
+  - Again, sets up a plot with a 10x10 inch canvas.
+  - Plots a scatterplot using seaborn:
+    - X-axis: `'AveBedrms'` (average number of bedrooms)
+    - Y-axis: `'MedInc'` (median income)
+    - Each point size = 3 (`s = 3`), color = green (`c = 'green'`), transparency = 0.4 (`alpha = 0.4`).
+- **Why?**
+  - This explores how the average number of bedrooms relates to median income, excluding extreme bedroom counts.
+
+---
+
+## **Summary Table**
+
+| Step | What it Does | Why it’s Done |
+|------|--------------|---------------|
+| 1 | Makes a DataFrame, adds target | Organize the dataset for analysis |
+| 2 | Plots Median House Value vs. Median Income | See correlation between house value and income |
+| 3 | Filters out extreme values for bedrooms | Remove outliers for clearer analysis |
+| 4 | Plots Average Bedrooms vs. Median Income | Explore bedroom count’s relationship with income |
+
+---
+
+**These steps are part of initial data exploration and visualization in a data science workflow.**
+
+Fourth code:
+ #Separating features and the target variable which is here MedHouseVal
+x = dataset.data
+y = dataset.target
+
+corr_matrix = x.copy()
+corr_matrix['MedHouseVal'] = y
+corr = corr_matrix.corr()
+
+plt.figure(figsize=(10, 8))
+sns.heatmap(corr, linewidths= 1, linecolor='pink',cmap = 'PiYG')
+plt.title("Feature Correlation with Target")
+plt.show()
+
+Here is a step-by-step explanation of the code you provided:
+
+---
+
+### 1. **Separate Features and Target Variable**
+```python
+x = dataset.data
+y = dataset.target
+```
+- **Purpose:**  
+  - `x` contains all the feature columns (inputs) from the dataset.
+  - `y` contains the target variable (output), which is `"MedHouseVal"` (median house value).
+- **Why:**  
+  - This separation is standard practice before building or analyzing machine learning models.
+
+---
+
+### 2. **Create Correlation Matrix Including Target**
+```python
+corr_matrix = x.copy()
+corr_matrix['MedHouseVal'] = y
+corr = corr_matrix.corr()
+```
+- **Purpose:**  
+  - Makes a copy of the features DataFrame (`x`).
+  - Adds the target variable (`y`) as a new column named `'MedHouseVal'`.
+  - Calculates the correlation matrix (`corr`) for all columns, including the target.
+- **Why:**  
+  - Allows you to see how each feature correlates with the target (`MedHouseVal`) and with each other.
+  - Correlation values range from -1 to 1:
+    - 1: Perfect positive correlation
+    - -1: Perfect negative correlation
+    - 0: No correlation
+
+---
+
+### 3. **Visualize Correlation Matrix with a Heatmap**
+```python
+plt.figure(figsize=(10, 8))
+sns.heatmap(corr, linewidths= 1, linecolor='pink', cmap = 'PiYG')
+plt.title("Feature Correlation with Target")
+plt.show()
+```
+- **Purpose:**
+  - Sets up a plot of size 10x8 inches.
+  - Plots the correlation matrix as a heatmap using seaborn:
+    - `linewidths=1`, `linecolor='pink'`: Sets grid lines between cells.
+    - `cmap='PiYG'`: Uses the PiYG (pink-green) color palette to indicate positive and negative correlation.
+  - Adds a title.
+  - `plt.show()` displays the plot.
+- **Why:**  
+  - A heatmap helps you quickly identify which features are strongly positively or negatively correlated with the target variable, and which features are correlated with each other.
+
+---
+
+### **Summary Table**
+
+| Step | What it Does                                        | Why it's Done                                      |
+|------|-----------------------------------------------------|----------------------------------------------------|
+| 1    | Separates features and target                       | Prepares for analysis or modeling                  |
+| 2    | Combines into one DataFrame, computes correlations  | See how each feature relates to the target         |
+| 3    | Visualizes correlations in a heatmap                | Quickly spot strongest relationships in the data   |
+
+---
+
+**In summary:**  
+This code block explores the relationships between all variables, especially how each feature relates to the target, and visualizes these relationships for easy interpretation.
+
+Fifth code:
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
+print("Training set size:", x_train.shape)
+print("Test set size:", x_test.shape)
+
+Here’s a step-by-step explanation of what each line does:
+
+---
+
+### 1. **Splitting the Data into Training and Testing Sets**
+```python
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
+```
+- **Purpose:**  
+  Splits your dataset into two parts: a training set (to build your model) and a test set (to evaluate its performance).
+- **Arguments Explained:**
+  - `x` = your features (input variables).
+  - `y` = your target variable (output/label, here it's Median House Value).
+  - `test_size=0.3` means 30% of the data goes into the test set, 70% into the training set.
+  - `random_state=42` makes the split reproducible—every time you run the code, you get the same split.
+- **Outputs:**
+  - `x_train`: features for the training set
+  - `x_test`: features for the test set
+  - `y_train`: targets for the training set
+  - `y_test`: targets for the test set
+
+---
+
+### 2. **Print the Size of Each Split**
+```python
+print("Training set size:", x_train.shape)
+print("Test set size:", x_test.shape)
+```
+- **Purpose:**  
+  Displays the number of samples (rows) and features (columns) in each set.
+- **Why:**  
+  - Helps verify that the split worked as intended.
+  - Example output might be:  
+    ```
+    Training set size: (14448, 8)
+    Test set size: (6192, 8)
+    ```
+  - Here, 70% of the data is in the training set, 30% in the test set, and there are 8 features.
+
+---
+
+**Summary:**  
+This code splits your data into training and test sets and prints the size of each, which is a standard step before training and evaluating machine learning models.
+
+Sixth code:
+depths = range(1, 25) #Different max_depth values and track perforance
+train_scores = []
+test_scores = []
+
+for d in depths:
+    model = DecisionTreeRegressor(max_depth=d, random_state=42)
+    model.fit(x_train, y_train)
+
+    train_scores.append(model.score(x_train, y_train))
+    test_scores.append(model.score(x_test, y_test))
+
+dtr = DecisionTreeRegressor(max_depth=3,random_state=42)
+dtr.fit(x_train, y_train)
+y_train_pred = dtr.predict(x_train)
+y_test_pred = dtr.predict(x_test)
+plt.figure(figsize=(10, 6))
+plot_tree(dtr, feature_names=x_train.columns.tolist(), filled=True)
+plt.title('Decision Tree Regression(max_depth = 3)')
+plt.show()
+
+print("Train MSE:", mean_squared_error(y_train, y_train_pred))
+print("Test MSE:", mean_squared_error(y_test, y_test_pred))
+sns.set_style('darkgrid')
+plt.figure(figsize=(10, 6))
+plt.plot(depths, train_scores, label='Training R²', marker='o')
+plt.plot(depths, test_scores, label='Testing R²', marker='o')
+plt.xlabel('Tree Depth')
+plt.ylabel('R² Score')
+plt.title('Decision Tree Performance vs Depth')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+print("Train R²:", r2_score(y_train, y_train_pred))
+print("Test R²:", r2_score(y_test, y_test_pred))
+
+Here’s a step-by-step explanation of your code:
+
+---
+
+### 1. **Set Up Depth Range and Score Containers**
+```python
+depths = range(1, 25) # Different max_depth values and track performance
+train_scores = []
+test_scores = []
+```
+- **Purpose:**  
+  - You want to see how the performance of a Decision Tree Regressor changes as you vary its maximum depth (from 1 to 24).
+  - `train_scores` and `test_scores` will store the R² scores for each depth.
+
+---
+
+### 2. **Loop Over Different Tree Depths**
+```python
+for d in depths:
+    model = DecisionTreeRegressor(max_depth=d, random_state=42)
+    model.fit(x_train, y_train)
+
+    train_scores.append(model.score(x_train, y_train))
+    test_scores.append(model.score(x_test, y_test))
+```
+- **Purpose:**  
+  - For each value of `max_depth`:
+    - Create a Decision Tree Regressor with that depth.
+    - Train (`fit`) it on the training data.
+    - Compute and store the R² score on both training and testing sets.
+- **Why:**  
+  - This helps you analyze **underfitting** (low training score at shallow depth) and **overfitting** (gap between train and test score at large depth).
+
+---
+
+### 3. **Train a Specific Decision Tree (Depth = 3) and Visualize**
+```python
+dtr = DecisionTreeRegressor(max_depth=3, random_state=42)
+dtr.fit(x_train, y_train)
+y_train_pred = dtr.predict(x_train)
+y_test_pred = dtr.predict(x_test)
+plt.figure(figsize=(10, 6))
+plot_tree(dtr, feature_names=x_train.columns.tolist(), filled=True)
+plt.title('Decision Tree Regression(max_depth = 3)')
+plt.show()
+```
+- **Purpose:**  
+  - Build a decision tree with a max depth of 3.
+  - Predict house values for both training and testing data.
+  - Plot the structure of the decision tree, showing how it splits features to make predictions.
+- **Why:**  
+  - Visualizing the tree helps you interpret how the regressor makes decisions.
+
+---
+
+### 4. **Evaluate Predictions with Mean Squared Error**
+```python
+print("Train MSE:", mean_squared_error(y_train, y_train_pred))
+print("Test MSE:", mean_squared_error(y_test, y_test_pred))
+```
+- **Purpose:**  
+  - Calculate the Mean Squared Error (MSE) for both training and test data.
+- **Why:**  
+  - Lower MSE means better prediction accuracy.
+
+---
+
+### 5. **Plot R² Scores vs. Tree Depth**
+```python
+sns.set_style('darkgrid')
+plt.figure(figsize=(10, 6))
+plt.plot(depths, train_scores, label='Training R²', marker='o')
+plt.plot(depths, test_scores, label='Testing R²', marker='o')
+plt.xlabel('Tree Depth')
+plt.ylabel('R² Score')
+plt.title('Decision Tree Performance vs Depth')
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+- **Purpose:**  
+  - Plots how the R² score changes with tree depth for both the training and test sets.
+- **Why:**  
+  - This helps you choose an optimal depth that balances bias and variance.
+
+---
+
+### 6. **Print R² Scores for Depth 3**
+```python
+print("Train R²:", r2_score(y_train, y_train_pred))
+print("Test R²:", r2_score(y_test, y_test_pred))
+```
+- **Purpose:**  
+  - Shows the R² (coefficient of determination) on training and testing sets for the tree with depth 3.
+- **Why:**  
+  - R² closer to 1 means better fit. Comparing train/test R² helps you check for overfitting.
+
+---
+
+### **Summary Table**
+
+| Step  | What it Does                                                         | Why it’s Done                           |
+|-------|-----------------------------------------------------------------------|-----------------------------------------|
+| 1     | Set up depths and score containers                                    | Prepare to track model performance      |
+| 2     | Loop through depths, train, score, and store R²                       | Analyze under/overfitting               |
+| 3     | Train and visualize tree with depth=3                                 | Interpret decision rules                |
+| 4     | Print MSE for train/test                                              | Evaluate prediction error               |
+| 5     | Plot R² vs. depth                                                     | Visualize model complexity vs. accuracy |
+| 6     | Print R² for depth=3                                                  | Assess fit for chosen model             |
+
+---
+
+**This is a standard approach to tuning and evaluating a decision tree regressor, visualizing both the model and how its complexity affects performance.**
+
+Seventh code:
+fig, ax = plt.subplots()
+ax.axis('off')
+reaction = """
+     (╯°□°)╯/ ┻━┻
+This tree is too much...
+"""
+ax.text(0.5, 0.5, reaction, fontsize=20, ha='center', va='center', fontfamily='monospace')
+plt.show()
+
+Here’s a step-by-step explanation of your code:
+
+---
+
+### 1. **Create a Figure and Axis**
+```python
+fig, ax = plt.subplots()
+```
+- **Purpose:**  
+  Initializes a new Matplotlib figure (`fig`) and an axis (`ax`) for plotting.
+- **Why:**  
+  You need an axis to add text or images in Matplotlib.
+
+---
+
+### 2. **Hide the Axis**
+```python
+ax.axis('off')
+```
+- **Purpose:**  
+  Turns off the axis lines, ticks, and labels.
+- **Why:**  
+  So only your custom text will be visible, not any plot or axes.
+
+---
+
+### 3. **Define the Reaction Text**
+```python
+reaction = """
+     (╯°□°)╯/ ┻━┻
+This tree is too much...
+"""
+```
+- **Purpose:**  
+  Stores a multi-line string of ASCII art and a funny message.
+- **Why:**  
+  This is the text you want to display in the plot.
+
+---
+
+### 4. **Add the Text to the Figure**
+```python
+ax.text(0.5, 0.5, reaction, fontsize=20, ha='center', va='center', fontfamily='monospace')
+```
+- **Purpose:**  
+  - Adds your `reaction` text to the center of the axis.
+  - `0.5, 0.5` specifies the center (x, y) coordinates (relative, not pixels).
+  - `fontsize=20`: Large font for visibility.
+  - `ha='center', va='center'`: Center horizontally and vertically.
+  - `fontfamily='monospace'`: Uses a monospace font, which makes ASCII art look correct.
+- **Why:**  
+  To display your reaction in a visually appealing way.
+
+---
+
+### 5. **Show the Figure**
+```python
+plt.show()
+```
+- **Purpose:**  
+  Renders and displays the figure with your reaction text.
+
+---
+
+## **Summary**
+- This code creates a blank figure and displays a large, centered, monospace ASCII art reaction.
+- It’s a playful way to comment on the complexity or size of a decision tree (or any other overwhelming data science result)!
+
+Eighth code:
+path = dtr.cost_complexity_pruning_path(x_train, y_train)
+alphas = path['ccp_alphas']
+print(alphas, alphas.shape)
+
+best_ccp_alpha = 0
+print(f"Best ccp_alpha: {best_ccp_alpha}")
+
+
+Here’s a step-by-step explanation of what your code does:
+
+---
+
+### 1. **Find Cost-Complexity Pruning Path**
+```python
+path = dtr.cost_complexity_pruning_path(x_train, y_train)
+```
+- **Purpose:**  
+  - Calculates effective alphas (regularization parameters) and the corresponding total leaf impurities for pruning a decision tree.
+  - `dtr` is your trained `DecisionTreeRegressor` (from previous code).
+  - `cost_complexity_pruning_path` helps you see how the tree can be pruned using different values of `ccp_alpha`.
+
+---
+
+### 2. **Extract Alpha Values**
+```python
+alphas = path['ccp_alphas']
+```
+- **Purpose:**  
+  - Extracts the array of `ccp_alpha` values from the pruning path.
+  - Each value of `ccp_alpha` represents a different level of pruning (higher alpha = more pruning).
+
+---
+
+### 3. **Print Alpha Values and their Shape**
+```python
+print(alphas, alphas.shape)
+```
+- **Purpose:**  
+  - Displays the array of alpha values and the total number of these values.
+  - Example output:  
+    ```
+    [0.         0.001234 0.002345 ...] (25,)
+    ```
+  - This tells you how many different pruning options are available.
+
+---
+
+### 4. **Set and Print Best Alpha**
+```python
+best_ccp_alpha = 0
+print(f"Best ccp_alpha: {best_ccp_alpha}")
+```
+- **Purpose:**  
+  - Sets `best_ccp_alpha` to 0 (no pruning).
+  - Prints which alpha you have chosen as the “best” (for now, you’re just using 0, which means the tree is not pruned).
+- **Note:**  
+  - In practice, you would usually try several values of `ccp_alpha` (using cross-validation) to find the best one for your data.
+
+---
+
+## **Summary Table**
+
+| Step | What it Does                                           | Why it’s Done                               |
+|------|--------------------------------------------------------|---------------------------------------------|
+| 1    | Computes pruning path and possible alphas              | To see how tree complexity can be reduced   |
+| 2    | Extracts all candidate alpha values                    | To try/prune tree at different complexity   |
+| 3    | Prints alpha values and their count                    | To inspect and verify possible options      |
+| 4    | Sets and prints chosen best alpha (here set to zero)   | To indicate which pruning parameter to use  |
+
+---
+
+**In short:**  
+You’re preparing to prune your decision tree by exploring possible `ccp_alpha` values, but for now, you’re just printing them and setting the best value to 0 (i.e., no pruning). In a real analysis, you’d typically next try different `ccp_alpha` values to optimize model performance.
+
+Ninth code:
+best_model = DecisionTreeRegressor(ccp_alpha=best_ccp_alpha, random_state=42)
+best_model.fit(x_train, y_train)
+y_pred_b = best_model.predict(x_test)
+
+mse = mean_squared_error(y_test, y_pred_b)
+print(f"Mean Squared Error: {mse}")
+
+r2 = best_model.score(x_test, y_test)
+print(f"R² Score: {r2}")
+
+plt.figure(figsize=(16, 10))
+plot_tree(best_model, filled=True,rounded = True, feature_names=x_train.columns, max_depth=3)
+plt.title("Decision Tree at Best Alpha")
+plt.show()
+
+Here’s a step-by-step explanation of your code block:
+
+---
+
+### 1. **Create and Train the Pruned Decision Tree**
+```python
+best_model = DecisionTreeRegressor(ccp_alpha=best_ccp_alpha, random_state=42)
+best_model.fit(x_train, y_train)
+```
+- **Purpose:**  
+  - Initializes a new decision tree regressor with a specified pruning parameter (`ccp_alpha`).
+  - `best_ccp_alpha` determines how much the tree is pruned. Here, it’s set to your chosen/best value (in your previous code, it was 0, meaning no pruning).
+  - `random_state=42` ensures reproducibility.
+  - The model is then trained (fit) on your training data.
+
+---
+
+### 2. **Make Predictions on the Test Set**
+```python
+y_pred_b = best_model.predict(x_test)
+```
+- **Purpose:**  
+  - Uses the trained model to predict house values for the test data.
+
+---
+
+### 3. **Evaluate Model Performance**
+```python
+mse = mean_squared_error(y_test, y_pred_b)
+print(f"Mean Squared Error: {mse}")
+
+r2 = best_model.score(x_test, y_test)
+print(f"R² Score: {r2}")
+```
+- **Purpose:**  
+  - `mean_squared_error`: Calculates the average squared error between predicted and actual house values on the test set (lower is better).
+  - `score` (for regression): Returns the R² (coefficient of determination) for the test set (closer to 1 is better).
+  - Both metrics help you judge how well the pruned tree predicts on unseen data.
+
+---
+
+### 4. **Visualize the Tree Structure**
+```python
+plt.figure(figsize=(16, 10))
+plot_tree(best_model, filled=True, rounded=True, feature_names=x_train.columns, max_depth=3)
+plt.title("Decision Tree at Best Alpha")
+plt.show()
+```
+- **Purpose:**  
+  - Creates a large figure for easy reading.
+  - Plots the structure of the trained decision tree, but only up to 3 levels deep (`max_depth=3`), even if the tree itself is deeper.
+  - `filled=True` colors the nodes based on predicted values.
+  - `rounded=True` makes node boxes rounded.
+  - `feature_names=x_train.columns` labels the splits with actual feature names.
+  - Adds a title and displays the plot.
+
+---
+
+### **Summary Table**
+
+| Step | What it Does                                                                | Why it’s Done                      |
+|------|-----------------------------------------------------------------------------|-------------------------------------|
+| 1    | Creates and trains a pruned decision tree                                   | To model the relationship in data   |
+| 2    | Predicts on the test set                                                    | To evaluate model on unseen data    |
+| 3    | Calculates MSE and R² on predictions                                        | To measure accuracy/performance     |
+| 4    | Plots the top 3 levels of the trained tree                                  | To visually interpret model splits  |
+
+---
+
+**In short:**  
+You train and evaluate a (potentially pruned) decision tree, report its performance, and visualize its structure for interpretation.
+
+Tenth code:
+def generate_bootstrap_sample(x, y):
+    n_samples = x.shape[0]
+    indices = np.random.choice(n_samples, n_samples, replace=True)
+    return x.iloc[indices], y.iloc[indices]
+
+def bootstrap_ensemble(x_train, y_train, x_test, n_models=100):
+    all_predictions = []
+
+    for _ in range(n_models):
+        x_sample, y_sample = generate_bootstrap_sample(x_train, y_train)
+
+        model = DecisionTreeRegressor(random_state=42)
+        model.fit(x_sample, y_sample)
+
+        preds = model.predict(x_test)
+        all_predictions.append(preds)
+
+    return np.array(all_predictions)
+
+def summarize_predictions(predictions):
+    mean_preds = np.mean(predictions, axis=0)
+    std_preds = np.std(predictions, axis=0)
+    range_preds = np.ptp(predictions, axis=0)
+    return mean_preds, std_preds, range_preds
+
+predictions = bootstrap_ensemble(x_train, y_train, x_test, n_models=100)
+
+mean_preds, std_preds, range_preds = summarize_predictions(predictions)
+
+summary_df = pd.DataFrame({
+    'Mean': mean_preds[:5],
+    'Standart Deviation': std_preds[:5],
+    'Range': range_preds[:5]
+})
+print(summary_df)
+
+plt.hist(y_train, bins=30, edgecolor='black', color = 'skyblue', hatch = '+')
+plt.title('Distribution of y_train')
+plt.xlabel('Target value')
+plt.ylabel('Frequency')
+plt.show()
+
+
+#Or for predicted values
+final_predictions = np.mean(predictions, axis=0)
+plt.hist(final_predictions, bins=30, edgecolor='black', color = 'lightgreen', hatch = 'o')
+plt.title('Distribution of Final Predictions')
+plt.xlabel('Prediction')
+plt.ylabel('Frequency')
+plt.show()
+
+Here’s a step-by-step explanation of your bootstrapping and ensemble code:
+
+---
+
+### 1. **Generate a Bootstrap Sample**
+```python
+def generate_bootstrap_sample(x, y):
+    n_samples = x.shape[0]
+    indices = np.random.choice(n_samples, n_samples, replace=True)
+    return x.iloc[indices], y.iloc[indices]
+```
+- **Purpose:**  
+  - Randomly selects samples (with replacement) from the training set to create a new dataset of the same size.
+  - Returns both features and targets for the sampled indices.
+- **Why:**  
+  - Bootstrapping is commonly used in ensemble methods (like bagging) to reduce variance and overfitting.
+
+---
+
+### 2. **Build a Bootstrap Ensemble**
+```python
+def bootstrap_ensemble(x_train, y_train, x_test, n_models=100):
+    all_predictions = []
+
+    for _ in range(n_models):
+        x_sample, y_sample = generate_bootstrap_sample(x_train, y_train)
+
+        model = DecisionTreeRegressor(random_state=42)
+        model.fit(x_sample, y_sample)
+
+        preds = model.predict(x_test)
+        all_predictions.append(preds)
+
+    return np.array(all_predictions)
+```
+- **Purpose:**  
+  - Trains `n_models` (default 100) decision tree regressors, each on a different bootstrap sample of the training data.
+  - For each model, makes predictions on the test set, storing all predictions.
+- **Why:**  
+  - This is a manual implementation of bagging, which is the basis for the Random Forest algorithm.
+
+---
+
+### 3. **Summarize Predictions Across the Ensemble**
+```python
+def summarize_predictions(predictions):
+    mean_preds = np.mean(predictions, axis=0)
+    std_preds = np.std(predictions, axis=0)
+    range_preds = np.ptp(predictions, axis=0)
+    return mean_preds, std_preds, range_preds
+```
+- **Purpose:**  
+  - For each test sample, calculates:
+    - The mean of all predictions (ensemble average)
+    - The standard deviation (uncertainty/spread)
+    - The range (max - min, another measure of uncertainty)
+- **Why:**  
+  - This helps you see both the ensemble prediction and the uncertainty in the ensemble's output.
+
+---
+
+### 4. **Run the Ensemble and Summarize Predictions**
+```python
+predictions = bootstrap_ensemble(x_train, y_train, x_test, n_models=100)
+mean_preds, std_preds, range_preds = summarize_predictions(predictions)
+```
+- **Purpose:**  
+  - Executes the ensemble prediction process and gets summary statistics for each test point.
+
+---
+
+### 5. **Display a Summary DataFrame**
+```python
+summary_df = pd.DataFrame({
+    'Mean': mean_preds[:5],
+    'Standart Deviation': std_preds[:5],
+    'Range': range_preds[:5]
+})
+print(summary_df)
+```
+- **Purpose:**  
+  - Shows the first 5 test samples' ensemble mean, standard deviation, and range.
+- **Why:**  
+  - Gives a quick snapshot of ensemble prediction and uncertainty for a few samples.
+
+---
+
+### 6. **Histogram of Training Targets**
+```python
+plt.hist(y_train, bins=30, edgecolor='black', color = 'skyblue', hatch = '+')
+plt.title('Distribution of y_train')
+plt.xlabel('Target value')
+plt.ylabel('Frequency')
+plt.show()
+```
+- **Purpose:**  
+  - Plots the distribution of the target variable in your training data.
+- **Why:**  
+  - Helps visualize how your target values are spread out.
+
+---
+
+### 7. **Histogram of Final Predictions**
+```python
+final_predictions = np.mean(predictions, axis=0)
+plt.hist(final_predictions, bins=30, edgecolor='black', color = 'lightgreen', hatch = 'o')
+plt.title('Distribution of Final Predictions')
+plt.xlabel('Prediction')
+plt.ylabel('Frequency')
+plt.show()
+```
+- **Purpose:**  
+  - Plots the distribution of the ensemble's final (mean) predictions for the test set.
+- **Why:**  
+  - Helps compare the spread of predicted vs actual target values.
+
+---
+
+### **Summary Table**
+
+| Step | What it Does                                                                 | Why it’s Done                                  |
+|------|------------------------------------------------------------------------------|------------------------------------------------|
+| 1    | Generates a random bootstrap sample from data                                | For bagging/ensemble modeling                  |
+| 2    | Trains many decision trees on different bootstrap samples, collects preds    | To build a bootstrap ensemble (bagging)        |
+| 3    | Summarizes ensemble predictions (mean, std, range) for each test sample      | To estimate central tendency and uncertainty   |
+| 4    | Runs the ensemble prediction and gets summaries                              | To get actual ensemble results                 |
+| 5    | Shows first 5 samples' mean, std, and range in a table                      | To inspect uncertainty and ensemble output     |
+| 6    | Plots distribution of true training targets                                  | To visualize data characteristics              |
+| 7    | Plots distribution of ensemble predictions                                   | To visualize prediction spread                 |
+
+---
+
+**In summary:**  
+This code implements a bagging ensemble of decision trees via bootstrapping, summarizes prediction uncertainty, and visualizes both the training targets and ensemble predictions.
+
+Eleventh code:
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x=y_test, y=final_predictions, color='red', alpha=0.7, s = 3)
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], '--', label='Perfect Prediction', color='black')
+plt.xlabel('True Values')
+plt.ylabel('Mean Predicted Values')
+plt.title('Mean Predictions vs True Values')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+Here’s a step-by-step explanation of what this code does:
+
+---
+
+### 1. **Set Up the Figure**
+```python
+plt.figure(figsize=(10, 6))
+```
+- **Purpose:**  
+  Sets the size of the plot to 10x6 inches for better readability.
+
+---
+
+### 2. **Scatter Plot: True Values vs. Predicted Values**
+```python
+sns.scatterplot(x=y_test, y=final_predictions, color='red', alpha=0.7, s=3)
+```
+- **Purpose:**  
+  - Plots each test sample as a point, where the x-axis is the actual (true) value (`y_test`), and the y-axis is the mean predicted value from the ensemble (`final_predictions`).
+  - Points are small (`s=3`) and semi-transparent (`alpha=0.7`) with red color.
+- **Why:**  
+  - This visualizes how close your predictions are to the actual values. Ideally, points should lie along the diagonal (y=x).
+
+---
+
+### 3. **Add a Reference Line (Perfect Prediction)**
+```python
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], '--', label='Perfect Prediction', color='black')
+```
+- **Purpose:**  
+  - Draws a dashed black line from the minimum to the maximum value of `y_test`.
+  - This line represents the ideal case where predicted values perfectly match true values (y = x).
+- **Why:**  
+  - Helps you visually judge how well the predictions align with actual values.
+
+---
+
+### 4. **Add Labels and Title**
+```python
+plt.xlabel('True Values')
+plt.ylabel('Mean Predicted Values')
+plt.title('Mean Predictions vs True Values')
+```
+- **Purpose:**  
+  - Labels the axes and gives the plot a title for clarity.
+
+---
+
+### 5. **Add Legend and Grid**
+```python
+plt.legend()
+plt.grid(True)
+```
+- **Purpose:**  
+  - Adds a legend (for the perfect prediction line).
+  - Turns on grid lines for easier reading.
+
+---
+
+### 6. **Display the Plot**
+```python
+plt.show()
+```
+- **Purpose:**  
+  - Renders and displays the plot.
+
+---
+
+## **Summary Table**
+
+| Step | What it Does                                             | Why it’s Done                                 |
+|------|----------------------------------------------------------|-----------------------------------------------|
+| 1    | Sets the plot size                                       | Improves readability                          |
+| 2    | Plots predicted vs. actual values (scatter)              | Visualizes prediction accuracy                |
+| 3    | Adds perfect prediction line (y=x)                       | For reference; shows ideal prediction         |
+| 4    | Adds labels and title                                    | Clarifies the meaning of axes and plot        |
+| 5    | Adds legend and grid                                     | Improves interpretability                     |
+| 6    | Displays the plot                                        | Shows you the visualization                   |
+
+---
+
+**In short:**  
+This plot lets you visually assess how closely your ensemble model’s mean predictions match the true values for each test sample. The closer the red dots are to the black dashed line, the better your model is performing.
+
+Twelth code:
+# Boxplot
+sample_points = np.random.choice(predictions.shape[1], 7, replace=False)
+plt.figure(figsize=(14, 5))
+palette = load_cmap("Set3").hex[:7]
+sns.boxplot(data=pd.DataFrame(predictions[:, sample_points], columns=[f'Point {i}' for i in sample_points]), palette = palette,
+    orient='v')
+plt.ylabel('Prediction')
+plt.title('Distribution of Predictions for Selected Test Points')
+plt.tight_layout()
+plt.show()
+
+Here’s a step-by-step explanation of your boxplot code:
+
+---
+
+### 1. **Select Random Test Points**
+```python
+sample_points = np.random.choice(predictions.shape[1], 7, replace=False)
+```
+- **Purpose:**  
+  Randomly selects 7 unique indices from your test set to examine.
+- **Why:**  
+  You want to visualize the prediction distribution for 7 specific test points across your ensemble.
+
+---
+
+### 2. **Set Up the Figure**
+```python
+plt.figure(figsize=(14, 5))
+```
+- **Purpose:**  
+  Creates a wide figure for the boxplots.
+
+---
+
+### 3. **Set the Color Palette**
+```python
+palette = load_cmap("Set3").hex[:7]
+```
+- **Purpose:**  
+  Loads a categorical color palette (Set3) and selects 7 colors for the 7 boxplots.
+- **Note:**  
+  If you get an error with `load_cmap`, you can use:  
+  ```python
+  palette = sns.color_palette("Set3", 7)
+  ```
+
+---
+
+### 4. **Create the Boxplot**
+```python
+sns.boxplot(
+    data=pd.DataFrame(predictions[:, sample_points], columns=[f'Point {i}' for i in sample_points]), 
+    palette=palette,
+    orient='v'
+)
+```
+- **Purpose:**  
+  - For each of the 7 selected test points, shows a boxplot of the predictions from all ensemble models.
+  - The boxplot displays the spread, median, quartiles, and outliers of the predictions for each test point.
+- **Why:**  
+  - This lets you see the variability (uncertainty) in predictions for each test sample.
+
+---
+
+### 5. **Beautify and Show the Plot**
+```python
+plt.ylabel('Prediction')
+plt.title('Distribution of Predictions for Selected Test Points')
+plt.tight_layout()
+plt.show()
+```
+- **Purpose:**  
+  - Adds a label to the y-axis and a title.
+  - `plt.tight_layout()` avoids label overlap.
+  - `plt.show()` displays the plot.
+
+---
+
+### **Summary Table**
+
+| Step | What it Does                                       | Why it’s Done                            |
+|------|----------------------------------------------------|------------------------------------------|
+| 1    | Randomly selects 7 test points                     | To sample points for distribution plots  |
+| 2    | Creates a wide figure                              | For better visualization                 |
+| 3    | Sets a colorful palette                            | For easy distinction between boxplots    |
+| 4    | Plots boxplots of predictions for each test point  | To visualize prediction uncertainty      |
+| 5    | Beautifies and displays the plot                   | For clarity and presentation             |
+
+---
+
+**In short:**  
+This code visualizes the distribution of ensemble predictions for 7 randomly chosen test samples, using colorful boxplots to highlight uncertainty and spread in the ensemble’s output. This is a great way to understand the reliability of predictions for individual test points!
+
+Thirteenth code:
+#Bar chart
+n = 15
+indices = np.random.choice(len(y_test), n, replace=False)
+x_axis = np.arange(n)
+width = 0.35
+
+plt.figure(figsize=(15, 5))
+plt.bar(x_axis - width/2, y_test.iloc[indices], width, label='True', color = 'lightgreen')
+plt.bar(x_axis + width/2, mean_preds[indices], width, label='Predicted', color = 'pink')
+plt.xticks(x_axis, [f'Point {i}' for i in indices])
+plt.ylabel('Target Value')
+plt.title('True vs Mean Predicted Values')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+Here’s a step-by-step explanation of what this code does:
+
+---
+
+### 1. **Select Random Test Points**
+```python
+n = 15
+indices = np.random.choice(len(y_test), n, replace=False)
+```
+- **Purpose:**  
+  - Randomly selects 15 unique indices from your test set.
+- **Why:**  
+  - To visualize predictions and ground truth for a manageable subset of test samples.
+
+---
+
+### 2. **Set Up the X-Axis**
+```python
+x_axis = np.arange(n)
+width = 0.35
+```
+- **Purpose:**  
+  - `x_axis` sets the positions for the bars (0 to 14).
+  - `width` determines how wide each bar will be.
+
+---
+
+### 3. **Create the Figure**
+```python
+plt.figure(figsize=(15, 5))
+```
+- **Purpose:**  
+  - Creates a wide figure to comfortably fit 15 pairs of bars.
+
+---
+
+### 4. **Plot True Values as Bars**
+```python
+plt.bar(x_axis - width/2, y_test.iloc[indices], width, label='True', color = 'lightgreen')
+```
+- **Purpose:**  
+  - Plots the true target values for these 15 points as green bars, slightly shifted left for grouping.
+
+---
+
+### 5. **Plot Predicted Values as Bars**
+```python
+plt.bar(x_axis + width/2, mean_preds[indices], width, label='Predicted', color = 'pink')
+```
+- **Purpose:**  
+  - Plots the mean predicted values for these 15 points as pink bars, slightly shifted right for grouping.
+
+---
+
+### 6. **Customize X-Ticks**
+```python
+plt.xticks(x_axis, [f'Point {i}' for i in indices])
+```
+- **Purpose:**  
+  - Labels each group of bars with their test set index for easier comparison.
+
+---
+
+### 7. **Add Labels, Title, Legend**
+```python
+plt.ylabel('Target Value')
+plt.title('True vs Mean Predicted Values')
+plt.legend()
+plt.tight_layout()
+```
+- **Purpose:**  
+  - Adds y-axis label, plot title, and legend.
+  - `plt.tight_layout()` prevents label overlap.
+
+---
+
+### 8. **Display the Plot**
+```python
+plt.show()
+```
+- **Purpose:**  
+  - Renders the bar chart.
+
+---
+
+### **Summary Table**
+
+| Step | What it Does                                             | Why it’s Done                                 |
+|------|----------------------------------------------------------|-----------------------------------------------|
+| 1    | Randomly selects 15 test points                          | To sample points for display                  |
+| 2    | Sets up X positions for the bar chart                    | For proper grouping and spacing               |
+| 3    | Creates a large figure                                   | For clear visualization                       |
+| 4    | Plots true values as left-shifted green bars             | Compare ground truth visually                 |
+| 5    | Plots predicted values as right-shifted pink bars        | Compare predictions visually                  |
+| 6    | Labels the X-axis with test points                       | For clarity                                   |
+| 7    | Adds y-label, title, legend, and adjusts layout          | For clarity and aesthetics                    |
+| 8    | Displays the plot                                        | To view the results                           |
+
+---
+
+**This bar chart lets you directly compare the true and predicted values for 15 randomly chosen test samples.** It’s a great visual for presentations or model diagnostics!
+
+
+Fourteenth code:
+# Error bars: Prediction ± std dev
+indices = np.random.choice(len(y_test), 20, replace=False)
+plt.figure(figsize=(12, 6))
+plt.errorbar(range(len(indices)), mean_preds[indices], yerr=std_preds[indices],fmt='o', ecolor='gray', capsize=3, label='Prediction ± std')
+plt.scatter(range(len(indices)), y_test.iloc[indices], color='red', label='True Value', marker='x')
+plt.title('Predictions with Uncertainty vs True Values')
+plt.legend()
+plt.xlabel('Sample Index')
+plt.ylabel('Target Value')
+plt.tight_layout()
+plt.show()
+
+Here’s a step-by-step explanation of what your code does:
+
+---
+
+### 1. **Randomly Select Test Samples**
+```python
+indices = np.random.choice(len(y_test), 20, replace=False)
+```
+- Randomly selects 20 unique indices from your test set.
+- **Why:** To visualize a manageable subset with error bars.
+
+---
+
+### 2. **Create a Figure**
+```python
+plt.figure(figsize=(12, 6))
+```
+- Sets the figure size to 12x6 inches for clarity.
+
+---
+
+### 3. **Plot Predictions with Error Bars**
+```python
+plt.errorbar(
+    range(len(indices)),
+    mean_preds[indices],
+    yerr=std_preds[indices],
+    fmt='o',
+    ecolor='gray',
+    capsize=3,
+    label='Prediction ± std'
+)
+```
+- **Purpose:**  
+  - Plots the mean prediction for each selected sample using a dot (`'o'`).
+  - Adds vertical error bars showing ±1 standard deviation (from your ensemble predictions).
+  - Error bars are gray and have small caps for visibility.
+  - **Interpretation:** The error bars represent the uncertainty or spread of your ensemble predictions for each test sample.
+
+---
+
+### 4. **Overlay True Values**
+```python
+plt.scatter(
+    range(len(indices)),
+    y_test.iloc[indices],
+    color='red',
+    label='True Value',
+    marker='x'
+)
+```
+- **Purpose:**  
+  - Plots the true target value for each selected sample as a red 'x'.
+  - **Interpretation:** Allows you to directly compare predicted values (with uncertainty) to the actual values.
+
+---
+
+### 5. **Beautify & Display**
+```python
+plt.title('Predictions with Uncertainty vs True Values')
+plt.legend()
+plt.xlabel('Sample Index')
+plt.ylabel('Target Value')
+plt.tight_layout()
+plt.show()
+```
+- Adds a title, axis labels, and a legend.
+- `plt.tight_layout()` ensures nothing overlaps.
+- `plt.show()` renders the plot.
+
+---
+
+### **Summary Table**
+
+| Step | What it Does                                         | Why it’s Done                                 |
+|------|------------------------------------------------------|-----------------------------------------------|
+| 1    | Selects 20 random test samples                       | To focus on a subset for visual clarity       |
+| 2    | Sets up a large figure                               | For easier visual inspection                  |
+| 3    | Plots mean predictions with standard deviation error | To visualize prediction & model uncertainty   |
+| 4    | Plots true values as red 'x' markers                 | For direct comparison with predictions        |
+| 5    | Adds labels, legend, and shows the plot              | For clarity and presentation                  |
+
+---
+
+**In short:**  
+This plot helps you see how well your ensemble predicts each selected test sample and how uncertain those predictions are, side by side with the true values. If the red 'x' falls within the error bar, your model's uncertainty covers the actual value!
+
+Fifteenth code:
+#Residual plot
+residuals = y_test - mean_preds
+plt.figure(figsize=(10, 5))
+plt.scatter(y_test, residuals, alpha=0.3, color='darkred', s = 3)
+plt.axhline(0, color='black', linestyle='--')
+plt.xlabel('True Value')
+plt.ylabel('Residual (True - Predicted)')
+plt.title('Residual Plot')
+plt.tight_layout()
+plt.show()
+
+Here’s a step-by-step explanation of your residual plot code:
+
+---
+
+### 1. **Calculate Residuals**
+```python
+residuals = y_test - mean_preds
+```
+- **Purpose:**  
+  - Computes the difference between the true values (`y_test`) and the predicted values (`mean_preds`) for each test sample.
+  - **Residual = True - Predicted**
+- **Why:**  
+  - Residuals show how much your model over- or under-predicts for each observation. They’re key for diagnosing model fit.
+
+---
+
+### 2. **Create the Figure**
+```python
+plt.figure(figsize=(10, 5))
+```
+- **Purpose:**  
+  - Sets the plot size for clarity.
+
+---
+
+### 3. **Scatter Plot: True Value vs. Residual**
+```python
+plt.scatter(y_test, residuals, alpha=0.3, color='darkred', s=3)
+```
+- **Purpose:**  
+  - Plots each test sample as a point, with the x-axis as the true value and the y-axis as the residual.
+  - Points are small and semi-transparent for better visibility.
+- **Why:**  
+  - Shows if there’s any pattern in the residuals (e.g., model bias, heteroscedasticity).
+
+---
+
+### 4. **Add a Zero Line**
+```python
+plt.axhline(0, color='black', linestyle='--')
+```
+- **Purpose:**  
+  - Draws a horizontal dashed line at zero, making it easier to see which residuals are positive or negative.
+
+---
+
+### 5. **Label and Beautify**
+```python
+plt.xlabel('True Value')
+plt.ylabel('Residual (True - Predicted)')
+plt.title('Residual Plot')
+plt.tight_layout()
+plt.show()
+```
+- **Purpose:**  
+  - Adds axis labels and a title.
+  - `plt.tight_layout()` avoids overlapping text.
+  - `plt.show()` displays the plot.
+
+---
+
+### **Summary Table**
+
+| Step | What it Does                                   | Why it’s Done                          |
+|------|------------------------------------------------|----------------------------------------|
+| 1    | Calculates residuals                           | To measure prediction error per sample |
+| 2    | Sets up the figure size                        | Improves visualization                 |
+| 3    | Plots true value vs. residual                  | Visualizes model error distribution    |
+| 4    | Adds horizontal zero line                      | Reference for no error                 |
+| 5    | Labels, titles, and shows the plot             | For clarity and presentation           |
+
+---
+
+**A good residual plot will have points randomly scattered around zero (no clear pattern), indicating a well-fitted model. Patterns may suggest model biases or issues.**
+
+Sixteenth code:
+estimators = [1, 5, 10, 50, 100, 200]
+train_scores = []
+test_scores = []
+
+for n in estimators:
+    bagging = BaggingRegressor(
+        estimator=DecisionTreeRegressor(),
+        n_estimators=n,
+        random_state=42
+    )
+    bagging.fit(x_train, y_train)
+    y_pred = bagging.predict(x_test)
+    test_scores.append(r2_score(y_test, y_pred))
+    train_scores.append(r2_score(y_train, bagging.predict(x_train)))
+
+plt.figure(figsize=(10, 6))
+plt.plot(estimators, train_scores, label='Train R²', marker='o')
+plt.plot(estimators, test_scores, label='Test R²', marker='o')
+plt.xlabel('Number of Bootstrap Samples (n_estimators)')
+plt.ylabel('R² Score')
+plt.title('Effect of Bootstrap Samples on Performance')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+Here’s a step-by-step explanation of your code:
+
+---
+
+## 1. **Set up the range of estimators**
+```python
+estimators = [1, 5, 10, 50, 100, 200]
+train_scores = []
+test_scores = []
+```
+- **Purpose:**  
+  - You want to observe how the number of trees (`n_estimators`) in a `BaggingRegressor` affects model performance.
+  - `train_scores` and `test_scores` will store the R² scores for each configuration.
+
+---
+
+## 2. **Loop over different ensemble sizes**
+```python
+for n in estimators:
+    bagging = BaggingRegressor(
+        estimator=DecisionTreeRegressor(),
+        n_estimators=n,
+        random_state=42
+    )
+    bagging.fit(x_train, y_train)
+    y_pred = bagging.predict(x_test)
+    test_scores.append(r2_score(y_test, y_pred))
+    train_scores.append(r2_score(y_train, bagging.predict(x_train)))
+```
+- **Purpose:**  
+  - For each `n` (number of trees):
+    - Create a `BaggingRegressor` with `n` decision trees.
+    - Fit it on the training data.
+    - Predict both on train and test data.
+    - Record R² scores for both.
+- **Why:**  
+  - This shows how increasing the number of base estimators impacts both training and generalization performance.
+
+---
+
+## 3. **Plot the results**
+```python
+plt.figure(figsize=(10, 6))
+plt.plot(estimators, train_scores, label='Train R²', marker='o')
+plt.plot(estimators, test_scores, label='Test R²', marker='o')
+plt.xlabel('Number of Bootstrap Samples (n_estimators)')
+plt.ylabel('R² Score')
+plt.title('Effect of Bootstrap Samples on Performance')
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+- **Purpose:**  
+  - Plots a line for train and test R² scores as a function of the number of estimators.
+  - Markers highlight each result.
+- **Why:**  
+  - Visualizes the effect of ensemble size on both overfitting (train R²) and generalization (test R²).
+  - Helps to identify diminishing returns or optimal ensemble size.
+
+---
+
+### **Summary Table**
+
+| Step | What it Does                                        | Why it’s Done                                  |
+|------|-----------------------------------------------------|------------------------------------------------|
+| 1    | Sets up different numbers of trees                  | To analyze impact of ensemble size             |
+| 2    | Trains `BaggingRegressor` for each size, scores R²  | To measure train/test performance              |
+| 3    | Plots train/test R² vs. number of trees             | To visualize and compare model performance     |
+
+---
+
+**In short:**  
+This code demonstrates how the number of trees in a bagging ensemble affects the learning and generalization ability of your model, using R² as the metric. You can use the resulting plot to choose an appropriate ensemble size for your problem!
+
+Seventeenth code:
+import warnings
+warnings.filterwarnings("ignore")
+
+weak_learners = {
+    'Decision Tree': DecisionTreeRegressor(max_depth=3),
+    'KNN': KNeighborsRegressor(n_neighbors=5)
+}
+
+for name, learner in weak_learners.items():
+    bagging = BaggingRegressor(
+        estimator=learner,
+        n_estimators=50,
+        random_state=42
+    )
+    bagging.fit(x_train, y_train)
+    y_preds = np.array([estimator.predict(x_test) for estimator in bagging.estimators_])
+    prediction_variance = np.var(y_preds, axis=0).mean()
+    final_pred = bagging.predict(x_test)
+    r2 = r2_score(y_test, final_pred)
+
+    print(f"Model: {name}")
+    print(f"  Mean Prediction Variance: {prediction_variance:.4f}")
+    print(f"  Test R² Score: {r2:.4f}")
+    print("-" * 30)
+
+Here's a detailed explanation of your code:
+
+---
+
+## Purpose
+
+You are comparing two different weak learners—**Decision Tree (depth=3)** and **KNN (k=5)**—as base estimators in a bagging ensemble, evaluating both their prediction variance (as a measure of stability/uncertainty) and their test R² score (as a measure of accuracy).
+
+---
+
+## Step-by-step Explanation
+
+### 1. **Suppressing Warnings**
+```python
+import warnings
+warnings.filterwarnings("ignore")
+```
+- **Purpose:**  
+  Suppresses warnings for cleaner output.
+
+---
+
+### 2. **Define Weak Learners**
+```python
+weak_learners = {
+    'Decision Tree': DecisionTreeRegressor(max_depth=3),
+    'KNN': KNeighborsRegressor(n_neighbors=5)
+}
+```
+- **Purpose:**  
+  Sets up two weak learner types to compare in bagging:
+  - Decision Tree (shallow, depth=3)
+  - k-Nearest Neighbors (k=5)
+
+---
+
+### 3. **Loop Over Weak Learners**
+```python
+for name, learner in weak_learners.items():
+    bagging = BaggingRegressor(
+        estimator=learner,
+        n_estimators=50,
+        random_state=42
+    )
+    bagging.fit(x_train, y_train)
+```
+- **Purpose:**  
+  For each learner:
+  - Create a `BaggingRegressor` with 50 base estimators.
+  - Fit it to the training data.
+
+---
+
+### 4. **Calculate Prediction Variance**
+```python
+    y_preds = np.array([estimator.predict(x_test) for estimator in bagging.estimators_])
+    prediction_variance = np.var(y_preds, axis=0).mean()
+```
+- **Purpose:**  
+  - For each fitted base estimator, predict on the test set.
+  - `y_preds` shape: (n_estimators, n_test_samples)
+  - Compute the variance of predictions **across estimators** for each test point, then average across all test points.
+- **Why:**  
+  - The variance measures the stability of the ensemble's predictions. Lower variance = more stable predictions.
+
+---
+
+### 5. **Compute Final Predictions and R² Score**
+```python
+    final_pred = bagging.predict(x_test)
+    r2 = r2_score(y_test, final_pred)
+```
+- **Purpose:**  
+  - `final_pred`: The ensemble's mean prediction for each test point.
+  - `r2`: R² score on test data (accuracy).
+
+---
+
+### 6. **Print Results**
+```python
+    print(f"Model: {name}")
+    print(f"  Mean Prediction Variance: {prediction_variance:.4f}")
+    print(f"  Test R² Score: {r2:.4f}")
+    print("-" * 30)
+```
+- **Purpose:**  
+  - Reports the model type, average prediction variance, and test R² score for comparison.
+
+---
+
+## **Summary Table**
+
+| Model Type      | Mean Prediction Variance | Test R² Score |
+|-----------------|-------------------------|---------------|
+| Decision Tree   | (calculated value)      | (calculated)  |
+| KNN             | (calculated value)      | (calculated)  |
+
+---
+
+**Interpretation:**  
+- **Prediction Variance:** Lower means the ensemble is more stable (less sensitive to training data).
+- **R² Score:** Higher means better predictive performance.
+
+This code gives you a quick side-by-side comparison of two popular weak learners as bagging base models, showing both stability and accuracy. If you want the actual printed output, run the code in your environment!
+
+Eighteenth code:
+from sklearn.base import clone
+
+class MyBaggingRegressor:
+    def __init__(self, base_estimator, n_estimators=10, random_state=None):
+        self.base_estimator = base_estimator
+        self.n_estimators = n_estimators
+        self.random_state = random_state
+        self.estimators_ = []
+
+    def fit(self, x, y):
+        np.random.seed(self.random_state)
+        self.estimators_ = []
+
+        n_samples = x.shape[0]
+        for _ in range(self.n_estimators):
+            indices = np.random.choice(n_samples, size=n_samples, replace=True)
+            if isinstance(x, pd.DataFrame):
+                x_sample = x.iloc[indices]
+                y_sample = y.iloc[indices]
+            else:
+                x_sample = x[indices]
+                y_sample = y[indices]
+
+            estimator = clone(self.base_estimator)
+            estimator.fit(x_sample, y_sample)
+            self.estimators_.append(estimator)
+
+    def predict(self, x):
+        predictions = np.array([estimator.predict(x) for estimator in self.estimators_])
+        return predictions.mean(axis=0)
+
+    def predict_individuals(self, x):
+        return np.array([estimator.predict(x) for estimator in self.estimators_])
+
+Your implementation of `MyBaggingRegressor` is a custom bagging regressor very similar to scikit-learn’s `BaggingRegressor`, but simplified and educational. Here’s a quick review and explanation:
+
+---
+
+### **Class: `MyBaggingRegressor`**
+
+#### **Constructor**
+```python
+def __init__(self, base_estimator, n_estimators=10, random_state=None):
+    ...
+```
+- **base_estimator:** The model to bag (e.g., DecisionTreeRegressor).
+- **n_estimators:** Number of models in the ensemble.
+- **random_state:** For reproducibility.
+- **estimators_:** The list of trained estimators (populated in `.fit()`).
+
+---
+
+#### **fit**
+```python
+def fit(self, x, y):
+    np.random.seed(self.random_state)
+    self.estimators_ = []
+
+    n_samples = x.shape[0]
+    for _ in range(self.n_estimators):
+        indices = np.random.choice(n_samples, size=n_samples, replace=True)
+        if isinstance(x, pd.DataFrame):
+            x_sample = x.iloc[indices]
+            y_sample = y.iloc[indices]
+        else:
+            x_sample = x[indices]
+            y_sample = y[indices]
+
+        estimator = clone(self.base_estimator)
+        estimator.fit(x_sample, y_sample)
+        self.estimators_.append(estimator)
+```
+- Sets the random seed for reproducibility.
+- For each estimator:
+  - Draws a bootstrap sample.
+  - Clones and fits the base estimator on this sample.
+  - Appends the fitted estimator to the ensemble.
+
+---
+
+#### **predict**
+```python
+def predict(self, x):
+    predictions = np.array([estimator.predict(x) for estimator in self.estimators_])
+    return predictions.mean(axis=0)
+```
+- Gets predictions from all estimators.
+- Returns the mean prediction (bagging aggregates by averaging for regression).
+
+---
+
+#### **predict_individuals**
+```python
+def predict_individuals(self, x):
+    return np.array([estimator.predict(x) for estimator in self.estimators_])
+```
+- Returns the predictions of each individual estimator (useful for uncertainty analysis).
+
+---
+
+### **Summary Table**
+
+| Method           | What it Does                                                     |
+|------------------|------------------------------------------------------------------|
+| `fit`            | Trains ensemble on bootstrap samples                             |
+| `predict`        | Returns average prediction across all estimators                 |
+| `predict_individuals` | Returns array of all individual estimator predictions     |
+
+---
+
+**Notes/Suggestions:**
+- This code is clean and should work for both pandas DataFrames and numpy arrays.
+- You might want to check input types at construction for more robust error handling, but otherwise this is a solid educational implementation of bagging!
+
+If you want an example usage or tests, let me know!
+
+Nineteenth code:
+model = MyBaggingRegressor(base_estimator=DecisionTreeRegressor(max_depth=3), n_estimators=50, random_state=42)
+model.fit(x_train, y_train)
+
+y_pred = model.predict(x_test)
+individual_preds = model.predict_individuals(x_test)
+variance = np.var(individual_preds, axis=0).mean()
+r2 = r2_score(y_test, y_pred)
+
+print(f"Mean Prediction Variance: {variance:.4f}")
+print(f"Test R² Score: {r2:.4f}")
+
+Here’s what your code is doing, step by step:
+
+---
+
+### 1. **Create and Fit the Custom Bagging Model**
+```python
+model = MyBaggingRegressor(base_estimator=DecisionTreeRegressor(max_depth=3), n_estimators=50, random_state=42)
+model.fit(x_train, y_train)
+```
+- **Purpose:**  
+  - Creates an instance of your custom `MyBaggingRegressor`, using a shallow `DecisionTreeRegressor` (max_depth=3) as the base model, with 50 estimators, and a fixed random seed for reproducibility.
+  - Trains (fits) the ensemble on your training data.
+
+---
+
+### 2. **Predict on Test Set**
+```python
+y_pred = model.predict(x_test)
+```
+- **Purpose:**  
+  - Uses your trained ensemble to predict target values for the test data.
+  - This is the mean output across all individual bagged models (ensemble average).
+
+---
+
+### 3. **Get Individual Model Predictions**
+```python
+individual_preds = model.predict_individuals(x_test)
+```
+- **Purpose:**  
+  - Gets the predictions from each individual tree in the ensemble for each test sample.
+  - Shape: (n_estimators, n_test_samples)
+
+---
+
+### 4. **Calculate Prediction Variance**
+```python
+variance = np.var(individual_preds, axis=0).mean()
+```
+- **Purpose:**  
+  - For each test sample, computes the variance of predictions across all individual models.
+  - Takes the mean of these variances over all test samples.
+  - **Interpretation:** Measures the average uncertainty (spread) of the ensemble's predictions.
+
+---
+
+### 5. **Calculate Test R² Score**
+```python
+r2 = r2_score(y_test, y_pred)
+```
+- **Purpose:**  
+  - Computes the R² (coefficient of determination) score for the ensemble's predictions on the test set.
+  - **Interpretation:** Measures the proportion of variance in the true target values explained by your predictions. 1 is perfect, 0 is no better than mean, negative means worse than mean.
+
+---
+
+### 6. **Print the Results**
+```python
+print(f"Mean Prediction Variance: {variance:.4f}")
+print(f"Test R² Score: {r2:.4f}")
+```
+- **Purpose:**  
+  - Shows the average uncertainty (variance) and accuracy (R²) of your bagged model.
+
+---
+
+## **Summary Table**
+
+| Step | What it Does                                | Why it’s Done                             |
+|------|---------------------------------------------|-------------------------------------------|
+| 1    | Trains custom bagging ensemble              | To build a strong ensemble predictor      |
+| 2    | Predicts test values (ensemble mean)        | To evaluate ensemble performance          |
+| 3    | Gets all individual model predictions       | For uncertainty analysis                  |
+| 4    | Computes average prediction variance        | To quantify model uncertainty             |
+| 5    | Calculates R² score on test set             | To measure prediction accuracy            |
+| 6    | Prints variance and R²                      | For reporting and comparison              |
+
+---
+
+**In short:**  
+You’re evaluating both the accuracy and the uncertainty of your custom bagging ensemble, which gives a well-rounded view of its performance. If you want to visualize or compare these values to other models, just let me know!
+
+twentieth code:
+#Bagging Regressor with Decision Tree as base estimator
+bagging_model = BaggingRegressor(estimator=DecisionTreeRegressor(), n_estimators=50, random_state=42)
+bagging_model.fit(x_train, y_train)
+bagging_preds = bagging_model.predict(x_test)
+
+#Evaluation metrics
+dt_r2 = r2_score(y_test, y_pred)
+dt_mse = mean_squared_error(y_test, y_pred)
+bagging_r2 = r2_score(y_test, bagging_preds)
+bagging_mse = mean_squared_error(y_test, bagging_preds)
+
+(dt_r2, dt_mse), (bagging_r2, bagging_mse)
+
+Here’s what your code does, step by step, along with an explanation:
+
+---
+
+### 1. **Bagging Regressor with Decision Tree**
+```python
+bagging_model = BaggingRegressor(estimator=DecisionTreeRegressor(), n_estimators=50, random_state=42)
+bagging_model.fit(x_train, y_train)
+bagging_preds = bagging_model.predict(x_test)
+```
+- **Creates a Bagging ensemble** of 50 decision trees (`DecisionTreeRegressor`) as base estimators.
+- **Fits** the ensemble on your training data.
+- **Predicts** target values for your test data.
+
+---
+
+### 2. **Evaluation Metrics**
+```python
+dt_r2 = r2_score(y_test, y_pred)
+dt_mse = mean_squared_error(y_test, y_pred)
+bagging_r2 = r2_score(y_test, bagging_preds)
+bagging_mse = mean_squared_error(y_test, bagging_preds)
+```
+- **`y_pred`**: Presumably, these are predictions from a single DecisionTreeRegressor (not shown in your snippet, but should be defined as: `y_pred = single_tree.predict(x_test)`).
+- **`r2_score`**: Measures how well the model explains the variance in the data (closer to 1 is better).
+- **`mean_squared_error`**: Measures average squared difference between predicted and actual values (lower is better).
+- Both metrics are calculated for:
+  - The single tree (`dt_r2`, `dt_mse`)
+  - The bagging ensemble (`bagging_r2`, `bagging_mse`)
+
+---
+
+### 3. **Returns Both Results**
+```python
+(dt_r2, dt_mse), (bagging_r2, bagging_mse)
+```
+- Returns a tuple of metrics for both models:
+  - First tuple: Decision Tree (single)
+  - Second tuple: Bagging Ensemble
+
+---
+
+## **How to Interpret the Output**
+
+- **If Bagging works well:**  
+  - `bagging_r2` should be higher than `dt_r2`
+  - `bagging_mse` should be lower than `dt_mse`
+- **Conclusion:**  
+  - Bagging (ensemble of weak learners) usually increases predictive accuracy and reduces overfitting compared to a single decision tree.
+
+---
+
+### **Sample Output Example** (values will depend on your data/model)
+```python
+# ((single tree R2, single tree MSE), (bagging R2, bagging MSE))
+((0.75, 50.23), (0.82, 38.10))
+```
+
+---
+
+**In short:**  
+This code compares a single decision tree’s performance to a bagging ensemble of trees, showing how ensemble methods can lead to better, more robust predictions. If you want to print these results, you can do:
+```python
+print(f"Single Decision Tree: R2 = {dt_r2:.4f}, MSE = {dt_mse:.4f}")
+print(f"Bagging Regressor:    R2 = {bagging_r2:.4f}, MSE = {bagging_mse:.4f}")
+```
+Let me know if you want a visualization or further analysis!
+
+Twenty first code:
+n_estimators_range = list(range(1, 101, 5))  # From 1 to 100 in steps o 5
+r2_scores = []
+mse_scores = []
+
+for n in n_estimators_range:
+    model = BaggingRegressor(estimator=DecisionTreeRegressor(), n_estimators=n, random_state=42)
+    model.fit(x_train, y_train)
+    preds = model.predict(x_test)
+    r2_scores.append(r2_score(y_test, preds))
+    mse_scores.append(mean_squared_error(y_test, preds))
+
+plt.figure(figsize=(14, 6))
+
+plt.subplot(1, 2, 1)
+plt.plot(n_estimators_range, r2_scores, marker='o', color='blue')
+plt.title("Effect of Number of Trees on R² Score")
+plt.xlabel("Number of Trees")
+plt.ylabel("R² Score")
+plt.grid(True)
+
+plt.subplot(1, 2, 2)
+plt.plot(n_estimators_range, mse_scores, marker='o', color='red')
+plt.title("Effect of Number of Trees on MSE")
+plt.xlabel("Number of Trees")
+plt.ylabel("Mean Squared Error")
+plt.grid(True)
+
+plt.tight_layout()
+plt.show()
+
+Here’s a breakdown of what your code does and how to interpret the results:
+
+---
+
+## **What does this code do?**
+
+1. **Setup:**
+   ```python
+   n_estimators_range = list(range(1, 101, 5))  # From 1 to 100 in steps of 5
+   r2_scores = []
+   mse_scores = []
+   ```
+   - You define a range of tree counts for your bagging ensemble: 1, 6, 11, ..., 96.
+   - You create empty lists to store R² and MSE scores for each ensemble size.
+
+2. **Model Training and Evaluation:**
+   ```python
+   for n in n_estimators_range:
+       model = BaggingRegressor(estimator=DecisionTreeRegressor(), n_estimators=n, random_state=42)
+       model.fit(x_train, y_train)
+       preds = model.predict(x_test)
+       r2_scores.append(r2_score(y_test, preds))
+       mse_scores.append(mean_squared_error(y_test, preds))
+   ```
+   - For each number of trees (`n`):
+     - Instantiate and train a `BaggingRegressor` with `n` decision trees.
+     - Predict on the test set.
+     - Store the R² and MSE scores.
+
+3. **Plotting:**
+   ```python
+   plt.figure(figsize=(14, 6))
+
+   plt.subplot(1, 2, 1)
+   plt.plot(n_estimators_range, r2_scores, marker='o', color='blue')
+   plt.title("Effect of Number of Trees on R² Score")
+   plt.xlabel("Number of Trees")
+   plt.ylabel("R² Score")
+   plt.grid(True)
+
+   plt.subplot(1, 2, 2)
+   plt.plot(n_estimators_range, mse_scores, marker='o', color='red')
+   plt.title("Effect of Number of Trees on MSE")
+   plt.xlabel("Number of Trees")
+   plt.ylabel("Mean Squared Error")
+   plt.grid(True)
+
+   plt.tight_layout()
+   plt.show()
+   ```
+   - Two subplots are created:
+     - **Left:** R² score vs. number of trees (higher is better).
+     - **Right:** Mean Squared Error vs. number of trees (lower is better).
+   - Both plots help visualize how adding more trees influences performance.
+
+---
+
+## **How to interpret the results?**
+
+- **R² Score Plot:**
+  - Shows how well your ensemble explains the variance in the test data as you increase the number of trees.
+  - Expect R² to increase and flatten out (saturate) as you add more trees.
+
+- **MSE Plot:**
+  - Shows the average squared difference between predictions and true values.
+  - Expect MSE to decrease (improve) and then stabilize as more trees are added.
+
+- **Overall:**
+  - These plots help you determine the optimal number of trees for your problem: after a certain point, adding more trees gives little to no gain (law of diminishing returns).
+
+---
+
+**This is a great way to visualize the bias-variance tradeoff and ensemble benefits in bagging!**
+
+Twenty second code:
+class MyBaggingRegressor:
+    def __init__(self, base_estimator, n_estimators=10, max_features=None, random_state=None):
+        self.base_estimator = base_estimator
+        self.n_estimators = n_estimators
+        self.max_features = max_features
+        self.random_state = random_state
+        self.models = []
+
+def fit(self, x, y):
+    np.random.seed(self.random_state)
+    self.models = []
+    self.feature_indices = []
+
+    for i in range(self.n_estimators):
+        # Bootstrap sample
+        indices = np.random.choice(len(x), size=len(x), replace=True)
+        x_sample = x.iloc[indices]
+        y_sample = y.iloc[indices]
+
+        # Select random subset of features
+        if self.max_features is not None:
+            feature_idx = np.random.choice(x.shape[1], self.max_features, replace=False)
+        else:
+            feature_idx = np.arange(x.shape[1])  # Use all features
+
+        x_sample_subset = x_sample.iloc[:, feature_idx]
+        model = clone(self.base_estimator)
+        model.fit(x_sample_subset, y_sample)
+        self.models.append(model)
+        self.feature_indices.append(feature_idx)
+
+def predict(self, x):
+    predictions = np.zeros((len(x), self.n_estimators))
+
+    for i, model in enumerate(self.models):
+        feature_idx = self.feature_indices[i]
+        predictions[:, i] = model.predict(x.iloc[:, feature_idx])
+
+    return predictions.mean(axis=1)
+
+
+from math import floor
+
+#For example: if p = 8, then max_features = 8 // 3 = 2
+max_features = x.shape[1] // 3
+
+
+Certainly! Here’s a detailed, step-by-step explanation of your modified `MyBaggingRegressor` with feature subspace sampling (random subspace method):
+
+---
+
+### 1. **Initialization**
+
+```python
+class MyBaggingRegressor:
+    def __init__(self, base_estimator, n_estimators=10, max_features=None, random_state=None):
+        self.base_estimator = base_estimator
+        self.n_estimators = n_estimators
+        self.max_features = max_features
+        self.random_state = random_state
+        self.models = []
+```
+- **Purpose:** Set up the regressor with the user’s chosen base model, number of models, number of features per model, and random seed for reproducibility.
+- **Attributes initialized:**
+  - `self.base_estimator`: The base model to be cloned for each ensemble member.
+  - `self.n_estimators`: Number of models in the ensemble.
+  - `self.max_features`: How many features to randomly select for each model (if `None`, use all features).
+  - `self.random_state`: Seed for reproducibility.
+  - `self.models`: Will hold the fitted models.
+
+---
+
+### 2. **fit Method**
+
+```python
+def fit(self, x, y):
+    np.random.seed(self.random_state)
+    self.models = []
+    self.feature_indices = []
+
+    for i in range(self.n_estimators):
+        # Bootstrap sample
+        indices = np.random.choice(len(x), size=len(x), replace=True)
+        x_sample = x.iloc[indices]
+        y_sample = y.iloc[indices]
+
+        # Select random subset of features
+        if self.max_features is not None:
+            feature_idx = np.random.choice(x.shape[1], self.max_features, replace=False)
+        else:
+            feature_idx = np.arange(x.shape[1])  # Use all features
+
+        x_sample_subset = x_sample.iloc[:, feature_idx]
+        model = clone(self.base_estimator)
+        model.fit(x_sample_subset, y_sample)
+        self.models.append(model)
+        self.feature_indices.append(feature_idx)
+```
+
+- **Step-by-step:**
+  1. **Seed the RNG:** Ensures reproducibility.
+  2. **Reset models/indices:** Clears any previous models and feature indices.
+  3. **For each estimator (loop):**
+      - **Bootstrap sample:** Randomly select rows (with replacement) for training.
+      - **Feature subspace:** Randomly select `max_features` columns (features) for this estimator, or all features if `max_features` is `None`.
+      - **Subset the data:** Use only the selected samples and features for this model.
+      - **Clone and train:** Clone the base estimator and fit it to this bootstrapped, sub-sampled data.
+      - **Store the model and its features:** Keep both for prediction.
+
+---
+
+### 3. **predict Method**
+
+```python
+def predict(self, x):
+    predictions = np.zeros((len(x), self.n_estimators))
+
+    for i, model in enumerate(self.models):
+        feature_idx = self.feature_indices[i]
+        predictions[:, i] = model.predict(x.iloc[:, feature_idx])
+
+    return predictions.mean(axis=1)
+```
+
+- **Step-by-step:**
+  1. **Prepare array:** For all test samples, for all models.
+  2. **For each model:** 
+     - Select the same features as used during its training (`feature_idx`).
+     - Predict using only those features.
+     - Store predictions.
+  3. **Aggregate:** Average predictions across all models for each sample (bagging principle).
+
+---
+
+### 4. **Setting max_features Example**
+
+```python
+max_features = x.shape[1] // 3  # For p=8, this is 2
+```
+- **Purpose:** If you have 8 features, each base estimator will randomly use 2 features (just like a random forest).
+
+---
+
+## **Summary Table**
+
+| Step         | What Happens                                                                 |
+|--------------|------------------------------------------------------------------------------|
+| Initialization | Set up the bagging regressor and its parameters.                         |
+| fit          | For each base estimator: bootstrap rows, randomly select features, fit model |
+| predict      | For each model: predict using its features, then average predictions        |
+| Usage        | `max_features` controls number of features per estimator, e.g., 2 of 8      |
+
+---
+
+**This design lets each model see a different subset of samples and features, increasing ensemble diversity and often improving generalization—just like in Random Forests!**
+
+
+Twenty third code:
+from sklearn.ensemble import RandomForestRegressor #lazy to go up
+
+max_features_range = list(range(1, x.shape[1] + 1))
+n_estimators_range = list(range(10, 201, 30))
+
+results = {
+    'max_features': [],
+    'n_estimators': [],
+    'train_error': [],
+    'test_error': [],
+    'oob_error': []
+}
+
+for max_feat in max_features_range:
+    for n_est in n_estimators_range:
+        rf = RandomForestRegressor(
+            n_estimators=n_est,
+            max_features=max_feat,
+            oob_score=True,
+            bootstrap=True,
+            random_state=42,
+            n_jobs=-1
+        )
+        rf.fit(x_train, y_train)
+
+        train_pred = rf.predict(x_train)
+        test_pred = rf.predict(x_test)
+
+        train_mse = mean_squared_error(y_train, train_pred)
+        test_mse = mean_squared_error(y_test, test_pred)
+        oob_mse = 1 - rf.oob_score_ if hasattr(rf, "oob_score_") else None
+
+        results['max_features'].append(max_feat)
+        results['n_estimators'].append(n_est)
+        results['train_error'].append(train_mse)
+        results['test_error'].append(test_mse)
+        results['oob_error'].append(oob_mse)
+
+df_results = pd.DataFrame(results)
+
+plt.figure(figsize=(16, 6))
+pivot_test = df_results.pivot(index="max_features", columns="n_estimators", values="test_error")
+pivot_train = df_results.pivot(index="max_features", columns="n_estimators", values="train_error")
+pivot_oob = df_results.pivot(index="max_features", columns="n_estimators", values="oob_error")
+
+plt.subplot(1, 3, 1)
+sns.heatmap(pivot_test, annot=False, cmap="Reds", cbar_kws={"label": "Test MSE"})
+plt.title("Test Error (MSE)")
+plt.xlabel("n_estimators")
+plt.ylabel("max_features")
+
+plt.subplot(1, 3, 2)
+sns.heatmap(pivot_train, annot=False, cmap="Greens", cbar_kws={"label": "Train MSE"})
+plt.title("Train Error (MSE)")
+plt.xlabel("n_estimators")
+plt.ylabel("")
+
+plt.subplot(1, 3, 3)
+sns.heatmap(pivot_oob, annot=False, cmap="RdPu", cbar_kws={"label": "OOB Error"})
+plt.title("OOB Error (1 - OOB R²)")
+plt.xlabel("n_estimators")
+plt.ylabel("")
+
+plt.tight_layout()
+plt.show()
+
+Here’s a step-by-step explanation of what your code does, including how to interpret the visualizations:
+
+---
+
+## **1. Import and Setup**
+```python
+from sklearn.ensemble import RandomForestRegressor
+
+max_features_range = list(range(1, x.shape[1] + 1))
+n_estimators_range = list(range(10, 201, 30))
+```
+- **max_features_range:** Tries all values from 1 up to the total number of features, to see how many features each tree should consider at each split.
+- **n_estimators_range:** Tries different ensemble sizes, from 10 up to 200 in steps of 30.
+
+---
+
+## **2. Initialize Results Storage**
+```python
+results = {
+    'max_features': [],
+    'n_estimators': [],
+    'train_error': [],
+    'test_error': [],
+    'oob_error': []
+}
+```
+- Prepares a dictionary to store results for each grid search combination.
+
+---
+
+## **3. Grid Search Over Hyperparameters**
+```python
+for max_feat in max_features_range:
+    for n_est in n_estimators_range:
+        rf = RandomForestRegressor(
+            n_estimators=n_est,
+            max_features=max_feat,
+            oob_score=True,
+            bootstrap=True,
+            random_state=42,
+            n_jobs=-1
+        )
+        rf.fit(x_train, y_train)
+
+        train_pred = rf.predict(x_train)
+        test_pred = rf.predict(x_test)
+
+        train_mse = mean_squared_error(y_train, train_pred)
+        test_mse = mean_squared_error(y_test, test_pred)
+        oob_mse = 1 - rf.oob_score_ if hasattr(rf, "oob_score_") else None
+
+        results['max_features'].append(max_feat)
+        results['n_estimators'].append(n_est)
+        results['train_error'].append(train_mse)
+        results['test_error'].append(test_mse)
+        results['oob_error'].append(oob_mse)
+```
+- **For each combination** of `max_features` and `n_estimators`:
+  - Train a RandomForestRegressor.
+  - Predict on both train and test sets.
+  - Calculate MSE (mean squared error) for both.
+  - Calculate "OOB error" as `1 - oob_score_` (since OOB score is R², 1-R² acts like an error metric).
+  - Save all metrics.
+
+---
+
+## **4. Build a DataFrame**
+```python
+df_results = pd.DataFrame(results)
+```
+- Converts the results dictionary into a DataFrame for easy pivoting and plotting.
+
+---
+
+## **5. Prepare Data for Heatmaps**
+```python
+pivot_test = df_results.pivot(index="max_features", columns="n_estimators", values="test_error")
+pivot_train = df_results.pivot(index="max_features", columns="n_estimators", values="train_error")
+pivot_oob = df_results.pivot(index="max_features", columns="n_estimators", values="oob_error")
+```
+- Pivots the DataFrame to make heatmaps: rows are `max_features`, columns are `n_estimators`, cell values are error metrics.
+
+---
+
+## **6. Plot Heatmaps**
+```python
+plt.figure(figsize=(16, 6))
+
+plt.subplot(1, 3, 1)
+sns.heatmap(pivot_test, annot=False, cmap="Reds", cbar_kws={"label": "Test MSE"})
+plt.title("Test Error (MSE)")
+plt.xlabel("n_estimators")
+plt.ylabel("max_features")
+
+plt.subplot(1, 3, 2)
+sns.heatmap(pivot_train, annot=False, cmap="Greens", cbar_kws={"label": "Train MSE"})
+plt.title("Train Error (MSE)")
+plt.xlabel("n_estimators")
+plt.ylabel("")
+
+plt.subplot(1, 3, 3)
+sns.heatmap(pivot_oob, annot=False, cmap="RdPu", cbar_kws={"label": "OOB Error"})
+plt.title("OOB Error (1 - OOB R²)")
+plt.xlabel("n_estimators")
+plt.ylabel("")
+
+plt.tight_layout()
+plt.show()
+```
+- **Three subplots:**
+  1. **Test Error (MSE):** Lower is better. Sweet spot is low error with not too much overfitting.
+  2. **Train Error (MSE):** Shows overfitting if much lower than test error.
+  3. **OOB Error:** Out-of-bag error, a built-in cross-validation estimate.
+
+---
+
+## **How to interpret these plots?**
+- **Darkest areas** (lowest errors) show the best settings.
+- **Look for:**  
+  - Low test error (best generalization).
+  - OOB error should match test error closely in a well-behaved model.
+  - If train error is much lower than test/OOB, you may be overfitting.
+- **Use these plots** to pick good hyperparameters for your Random Forest.
+
+---
+
+**This approach is a powerful way to visually tune and understand the effects of Random Forest hyperparameters on your regression model performance!**
+
+Here’s a summary of what your Random Forest grid search and visualization code accomplishes:
+
+---
+
+## **Summary**
+
+- **Purpose:**  
+  The code systematically explores how changing two key hyperparameters—**max_features** (number of features considered at each split) and **n_estimators** (number of trees)—affects the performance of a Random Forest regressor.
+
+- **How it works:**
+  1. **Grid Search:**  
+     For every combination of `max_features` (from 1 to the total number of features) and `n_estimators` (from 10 to 200 in steps of 30), the code:
+     - Trains a RandomForestRegressor with those settings.
+     - Predicts on both training and test data.
+     - Calculates train MSE, test MSE, and OOB (out-of-bag) error.
+     - Stores these results for analysis.
+
+  2. **Results Storage:**  
+     All results are collected into a DataFrame for easy manipulation and plotting.
+
+  3. **Visualization:**  
+     The code creates three heatmaps (one for each error metric: train error, test error, OOB error) showing how errors change as you vary `max_features` and `n_estimators`.
+
+- **How to use:**  
+  - **Test Error:** Find settings that minimize the test MSE (red heatmap).
+  - **OOB Error:** Use OOB error as a cross-validation estimate if you don’t want to use a separate validation set.
+  - **Train vs. Test / OOB:** If train error is much lower than the others, the model may be overfitting.
+
+- **Insight:**  
+  This approach provides a visual and quantitative way to tune a Random Forest, helping you select hyperparameters that balance accuracy and generalization.
+
+---
+
+If you want this as a markdown cell for a notebook, or as a comment block for your code, just let me know!
+
+Twenty fourth code:
+x_vis = x.iloc[:, [0]] #Use only one feature for visualization(Median Income)
+
+x_train, x_test, y_train, y_test = train_test_split(x_vis, y, test_size=0.2, random_state=42)
+
+x_plot = np.linspace(x_train.min(), x_train.max(), 500).reshape(-1, 1)
+
+trees = [DecisionTreeRegressor(max_depth=5, random_state=i).fit(x_train, y_train) for i in range(10)]
+
+rf = RandomForestRegressor(n_estimators=10, max_depth=5, random_state=0)
+rf.fit(x_train, y_train)
+
+plt.figure(figsize=(14, 6))
+
+for tree in trees:
+    y_pred = tree.predict(x_plot)
+    plt.plot(x_plot, y_pred, color='darkred',alpha=0.3, label='Decision Tree' if 'Decision Tree' not in plt.gca().get_legend_handles_labels()[1] else "")
+
+y_rf_pred = rf.predict(x_plot)
+plt.plot(x_plot, y_rf_pred, color='darkgreen',alpha = 0.5, label='Random Forest (avg)')
+
+plt.scatter(x_train, y_train, color='pink', s=1, label='Training Data')
+
+plt.title("Variance Comparison: Decision Trees vs Random Forest (California Housing)")
+plt.xlabel("Median Income (Feature 0)")
+plt.ylabel("Median House Value")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+Here’s a step-by-step explanation of your code and what the resulting plot will show:
+
+---
+
+## **Step-by-step Explanation**
+
+### 1. **Select a Single Feature for Visualization**
+```python
+x_vis = x.iloc[:, [0]]  # Use only one feature for visualization (Median Income)
+```
+- **Purpose:** Reduce the data to a single feature (the first column, typically "Median Income" in the California Housing dataset) for easy 2D plotting.
+
+---
+
+### 2. **Train/Test Split**
+```python
+x_train, x_test, y_train, y_test = train_test_split(x_vis, y, test_size=0.2, random_state=42)
+```
+- **Purpose:** Split the data into training and testing sets.
+
+---
+
+### 3. **Create a Grid for Plotting**
+```python
+x_plot = np.linspace(x_train.min(), x_train.max(), 500).reshape(-1, 1)
+```
+- **Purpose:** Generate 500 evenly spaced values across the range of the training data feature, for smooth prediction lines.
+
+---
+
+### 4. **Train Multiple Decision Trees**
+```python
+trees = [DecisionTreeRegressor(max_depth=5, random_state=i).fit(x_train, y_train) for i in range(10)]
+```
+- **Purpose:** Train 10 different decision trees, each with a different random seed to ensure some variation between them.
+
+---
+
+### 5. **Train a Random Forest**
+```python
+rf = RandomForestRegressor(n_estimators=10, max_depth=5, random_state=0)
+rf.fit(x_train, y_train)
+```
+- **Purpose:** Train a random forest with 10 trees, each with max depth 5.
+
+---
+
+### 6. **Plot Each Decision Tree**
+```python
+for tree in trees:
+    y_pred = tree.predict(x_plot)
+    plt.plot(x_plot, y_pred, color='darkred', alpha=0.3, label='Decision Tree' if 'Decision Tree' not in plt.gca().get_legend_handles_labels()[1] else "")
+```
+- **Purpose:**  
+  - For each individual decision tree, plot its prediction curve over the input grid.
+  - Use a faded red color and only label the first line to avoid duplicate legend entries.
+  - This visually shows the **variance** between different single trees.
+
+---
+
+### 7. **Plot Random Forest Prediction**
+```python
+y_rf_pred = rf.predict(x_plot)
+plt.plot(x_plot, y_rf_pred, color='darkgreen', alpha=0.5, label='Random Forest (avg)')
+```
+- **Purpose:**  
+  - Plot the random forest’s average prediction across all trees.
+  - Typically, this line will be smoother and less "wiggly" than the individual trees.
+
+---
+
+### 8. **Plot Training Data**
+```python
+plt.scatter(x_train, y_train, color='pink', s=1, label='Training Data')
+```
+- **Purpose:**  
+  - Show the actual training data points to compare with the model predictions.
+
+---
+
+### 9. **Final Plot Settings**
+```python
+plt.title("Variance Comparison: Decision Trees vs Random Forest (California Housing)")
+plt.xlabel("Median Income (Feature 0)")
+plt.ylabel("Median House Value")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+- **Purpose:**  
+  - Add titles, labels, grid, and legend for clarity.
+  - Display the plot.
+
+---
+
+## **What You’ll See & Interpretation**
+
+- **Red Lines:**  
+  - Each faded red line is a different decision tree’s prediction.  
+  - The variation between them shows **high variance** (instability) of single trees.
+
+- **Green Line:**  
+  - The darker green line is the random forest’s average prediction.
+  - It is much smoother, demonstrating **variance reduction** due to bagging/averaging.
+
+- **Pink Dots:**  
+  - The training data, so you can see how closely the models fit.
+
+---
+
+### **Summary Table**
+
+| Element               | What it Shows                          |
+|-----------------------|----------------------------------------|
+| Red lines             | Individual Decision Tree predictions   |
+| Green line            | Random Forest (ensemble average)       |
+| Pink dots             | Actual training data                   |
+
+---
+
+**Conclusion:**  
+This visualization powerfully demonstrates why random forests generalize better: by averaging many high-variance trees, they produce smoother, more stable predictions, reducing overfitting and improving accuracy.

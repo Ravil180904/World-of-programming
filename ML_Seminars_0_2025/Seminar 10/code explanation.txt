@@ -1,0 +1,949 @@
+First code:
+# Visualize relationships between features and depression
+categorical = ['Gender', 'Sleep Duration', 'Dietary Habits', 'Degree', 'Have you ever had suicidal thoughts ?', 'Family History of Mental Illness']
+numerical = ['Age', 'Academic Pressure', 'Work Pressure', 'CGPA', 'Study Satisfaction', 'Job Satisfaction', 'Work/Study Hours', 'Financial Stress']
+
+# Categorical features vs Depression
+for col in categorical:
+    plt.figure(figsize=(6,3))
+    sns.countplot(x=col, hue='Depression', data=df)
+    plt.title(f'{col} vs Depression')
+    plt.show()
+
+# Numerical features vs Depression
+for col in numerical:
+    plt.figure(figsize=(6,3))
+    sns.histplot(data=df, x=col, hue='Depression', kde=True, bins=30)
+    plt.title(f'{col} distribution by Depression')
+    plt.show()
+
+# Heatmap of correlations (after encoding categorical for visualization)
+df_viz = df.copy()
+for col in categorical:
+    df_viz[col] = LabelEncoder().fit_transform(df_viz[col].astype(str))
+plt.figure(figsize=(14,8))
+sns.heatmap(df_viz.corr(), annot=True, fmt='.2f', cmap='coolwarm')
+plt.title('Feature Correlation Heatmap')
+plt.show()
+
+Let's break down and **explain each part of your code** for visualizing the relationships between features and depression in your dataset.
+
+---
+
+## 1. **Variable Definition**
+
+```python
+categorical = ['Gender', 'Sleep Duration', 'Dietary Habits', 'Degree', 
+               'Have you ever had suicidal thoughts ?', 'Family History of Mental Illness']
+numerical = ['Age', 'Academic Pressure', 'Work Pressure', 'CGPA', 
+             'Study Satisfaction', 'Job Satisfaction', 'Work/Study Hours', 'Financial Stress']
+```
+
+- `categorical`: This is a list of column names in your dataframe (`df`) that represent **categorical variables** (i.e., variables with a limited number of distinct values/categories, often text such as "Male"/"Female", "Yes"/"No", or types of sleep duration).
+- `numerical`: This is a list of **numerical variables** (variables that are continuous or discrete numbers).
+
+---
+
+## 2. **Categorical Features vs Depression**
+
+```python
+for col in categorical:
+    plt.figure(figsize=(6,3))
+    sns.countplot(x=col, hue='Depression', data=df)
+    plt.title(f'{col} vs Depression')
+    plt.show()
+```
+
+- **Loop through each categorical feature.**
+- For each:
+  - Create a new figure of size 6x3 inches.
+  - Use `sns.countplot()` to plot the count of each category (x-axis) **split by the 'Depression' value** (shown as different colors/bar segments due to the `hue='Depression'` argument).
+  - This helps you **see how the distribution of categories varies between depressed and non-depressed students**.
+  - Add a title and display the plot.
+
+**Example Insight:**  
+You might see that students with "Unhealthy" dietary habits have a higher count of depression cases (the colored bar for 1 is larger in that category).
+
+---
+
+## 3. **Numerical Features vs Depression**
+
+```python
+for col in numerical:
+    plt.figure(figsize=(6,3))
+    sns.histplot(data=df, x=col, hue='Depression', kde=True, bins=30)
+    plt.title(f'{col} distribution by Depression')
+    plt.show()
+```
+
+- **Loop through each numerical feature.**
+- For each:
+  - Create a new figure.
+  - Use `sns.histplot()` to plot a histogram of the feature, with different colors for each value of 'Depression'.
+  - `kde=True` adds a smoothed "curve" over the histogram to visualize the probability density.
+  - This lets you **compare the distributions of each feature for depressed vs non-depressed students**.
+  - Add a title and show the plot.
+
+**Example Insight:**  
+You might observe that students with lower CGPA have a higher density of depression cases.
+
+---
+
+## 4. **Heatmap of Correlations**
+
+```python
+df_viz = df.copy()
+for col in categorical:
+    df_viz[col] = LabelEncoder().fit_transform(df_viz[col].astype(str))
+plt.figure(figsize=(14,8))
+sns.heatmap(df_viz.corr(), annot=True, fmt='.2f', cmap='coolwarm')
+plt.title('Feature Correlation Heatmap')
+plt.show()
+```
+
+- **Make a copy of your dataframe** so you don't affect the original.
+- **Encode categorical columns as numbers** (required for calculating correlations).
+  - `LabelEncoder` assigns a unique number to each category, so your categorical data becomes numeric.
+- **Calculate the correlation matrix** with `df_viz.corr()` which gives the Pearson correlation coefficient between all pairs of features (including the target 'Depression').
+- **Plot a heatmap** of this correlation matrix:
+  - Each cell shows the correlation between a pair of features.
+  - `annot=True` shows the correlation value in each cell.
+  - `cmap='coolwarm'` colors the cells from blue (negative correlation) to red (positive correlation).
+- **This visualization helps you quickly spot which features are most strongly correlated with depression or with each other.**
+
+**Example Insight:**  
+A correlation close to +1 or -1 between a feature and 'Depression' means that feature is very predictive of depression.
+
+---
+
+## **Summary**
+
+- **Countplots**: Show how categorical values relate to depression.
+- **Histograms**: Show how the distribution of each numerical feature differs between depressed and non-depressed students.
+- **Correlation heatmap**: Shows how strongly each variable is related to every other, including the target.
+
+**These visualizations are essential for:**
+- Understanding your data.
+- Spotting trends, outliers, and relationships.
+- Guiding feature selection and engineering for your machine learning model.
+
+Second code:
+# Fix column names to match CSV exactly for binary encoding
+BINARY_LABELS = {
+    'Gender': {'Female': 0, 'Male': 1},
+    'Have you ever had suicidal thoughts ?': {'No': 0, 'Yes': 1},
+    'Family History of Mental Illness': {'No': 0, 'Yes': 1},
+}
+for col, mapping in BINARY_LABELS.items():
+    df[col] = df[col].map(mapping)
+
+# Label encode other categoricals
+cat_cols = ['Sleep Duration', 'Dietary Habits', 'Degree']
+for col in cat_cols:
+    df[col] = LabelEncoder().fit_transform(df[col].astype(str))
+
+# Fill missing values if any
+for col in df.columns:
+    if df[col].isnull().sum() > 0:
+        if df[col].dtype in ['float64', 'int64']:
+            df[col].fillna(df[col].median(), inplace=True)
+        else:
+            df[col].fillna(df[col].mode()[0], inplace=True)
+
+# Drop non-model columns
+X = df.drop(['id', 'City', 'Profession', 'Depression'], axis=1)
+y = df['Depression']
+
+# Standardize numeric columns
+num_cols = ['Age', 'Academic Pressure', 'Work Pressure', 'CGPA', 'Study Satisfaction', 'Job Satisfaction', 'Work/Study Hours', 'Financial Stress']
+scaler = StandardScaler()
+X[num_cols] = scaler.fit_transform(X[num_cols])
+
+# Show processed features
+X.head()
+
+Here’s a line-by-line explanation of your preprocessing code:
+
+---
+
+### 1. **Binary Encoding for True/False Columns**
+
+```python
+BINARY_LABELS = {
+    'Gender': {'Female': 0, 'Male': 1},
+    'Have you ever had suicidal thoughts ?': {'No': 0, 'Yes': 1},
+    'Family History of Mental Illness': {'No': 0, 'Yes': 1},
+}
+for col, mapping in BINARY_LABELS.items():
+    df[col] = df[col].map(mapping)
+```
+- **Purpose:** Converts categorical columns with two possible values ("binary") into 0 and 1 (numerical). This is necessary for most machine learning models.
+- **How:** For each specified column, “Female” becomes 0, “Male” becomes 1, “No” becomes 0, “Yes” becomes 1, etc.
+
+---
+
+### 2. **Label Encoding for Multi-Class Categoricals**
+
+```python
+cat_cols = ['Sleep Duration', 'Dietary Habits', 'Degree']
+for col in cat_cols:
+    df[col] = LabelEncoder().fit_transform(df[col].astype(str))
+```
+- **Purpose:** Converts columns with more than two categories (e.g., 'Sleep Duration' might be "5-6 hours", "7-8 hours", etc.) into integer codes: 0, 1, 2, ...
+- **How:** Uses `LabelEncoder` to assign a unique integer to each category in each column.
+
+---
+
+### 3. **Fill Missing Values**
+
+```python
+for col in df.columns:
+    if df[col].isnull().sum() > 0:
+        if df[col].dtype in ['float64', 'int64']:
+            df[col].fillna(df[col].median(), inplace=True)
+        else:
+            df[col].fillna(df[col].mode()[0], inplace=True)
+```
+- **Purpose:** Ensures the dataframe has no missing values, which most ML models require.
+- **How:** For numeric columns, missing values are replaced with the column’s median. For non-numeric (categorical) columns, missing values are replaced with the most frequent value (the mode).
+
+---
+
+### 4. **Prepare Features and Target**
+
+```python
+X = df.drop(['id', 'City', 'Profession', 'Depression'], axis=1)
+y = df['Depression']
+```
+- **Purpose:** Splits your data into:
+    - `X`: All columns you want to use as input features for the model (removes irrelevant columns and the target itself).
+    - `y`: The target variable (whether the student has depression).
+
+---
+
+### 5. **Standardize Numerical Columns**
+
+```python
+num_cols = ['Age', 'Academic Pressure', 'Work Pressure', 'CGPA', 'Study Satisfaction', 'Job Satisfaction', 'Work/Study Hours', 'Financial Stress']
+scaler = StandardScaler()
+X[num_cols] = scaler.fit_transform(X[num_cols])
+```
+- **Purpose:** Normalizes all numeric features to have mean 0 and standard deviation 1. This is important for models (like logistic regression) that are sensitive to the scale of features.
+- **How:** Uses `StandardScaler` to transform each column.
+
+---
+
+### 6. **Show the Processed Features**
+
+```python
+X.head()
+```
+- **Purpose:** Displays the top 5 rows of the processed features for inspection.
+
+---
+
+## **Summary**
+
+- Converts all relevant columns to numeric values (binary or label-encoded).
+- Fills any missing values.
+- Removes irrelevant columns.
+- Standardizes all numeric features.
+- Prepares the data for machine learning modeling.
+
+**This block of code is a robust preprocessing pipeline for tabular ML tasks.**
+
+Third code:
+# Train/test split (always stratify on imbalanced target)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+
+# Train Logistic Regression
+lr = LogisticRegression(max_iter=1000, random_state=42)
+lr.fit(X_train, y_train)
+y_pred = lr.predict(X_test)
+y_pred_prob = lr.predict_proba(X_test)[:, 1]
+
+Here’s what this code does, **step-by-step and with explanation**:
+
+---
+
+## 1. **Train/Test Split – with Stratification**
+
+```python
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, stratify=y, random_state=42
+)
+```
+
+- **Purpose:**  
+  Split your data into training and testing sets.  
+  - `test_size=0.2`: 20% of the data goes into the test set, 80% into the train set.
+  - `stratify=y`: Ensures the **proportion of classes** (depressed/not depressed) is the same in both sets. This is important if your target variable is imbalanced.
+  - `random_state=42`: Sets a seed for reproducibility, so you get the same split every time you run the code.
+
+---
+
+## 2. **Instantiate and Train Logistic Regression**
+
+```python
+lr = LogisticRegression(max_iter=1000, random_state=42)
+lr.fit(X_train, y_train)
+```
+
+- **Purpose:**  
+  - `LogisticRegression`: Creates a logistic regression model from scikit-learn.
+  - `max_iter=1000`: Allows up to 1000 iterations for model convergence (prevents warnings for convergence on larger datasets).
+  - `random_state=42`: Ensures results are reproducible.
+  - `.fit(X_train, y_train)`: Fits (trains) the model on your training data.
+
+---
+
+## 3. **Make Predictions**
+
+```python
+y_pred = lr.predict(X_test)
+y_pred_prob = lr.predict_proba(X_test)[:, 1]
+```
+
+- `y_pred`: **Predicted class labels** (0 or 1) for each student in your test set.
+- `y_pred_prob`: **Predicted probabilities** for class 1 (i.e., probability the student is depressed).  
+  - `predict_proba` returns a 2D array of probabilities for [class 0, class 1].  
+  - `[:, 1]` selects the probability for class 1 (depressed).
+
+---
+
+### **Summary**
+
+- **Splits** the data into train/test, preserving class balance.
+- **Trains** a logistic regression model on the training data.
+- **Predicts** both the class and the probability of depression for each student in the test set.
+
+---
+
+**Why is this good?**
+- Stratification ensures fair evaluation especially with imbalanced classes.
+- Probabilities (`y_pred_prob`) let you analyze model performance at different thresholds (e.g., for ROC curve, or setting a custom decision cutoff).
+- This is the standard supervised ML workflow for binary classification!
+
+Fourth code:
+acc = accuracy_score(y_test, y_pred)
+prec = precision_score(y_test, y_pred)
+rec = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+cm = confusion_matrix(y_test, y_pred)
+
+print("Confusion Matrix [TN FP; FN TP]:\n", cm)
+print(f"Accuracy: {acc:.3f} | Precision: {prec:.3f} | Recall: {rec:.3f} | F1: {f1:.3f}")
+print('\nClassification report:')
+print(classification_report(y_test, y_pred))
+
+Here’s what your code does, step by step, with explanation for each metric and output:
+
+---
+
+### 1. **Calculate Evaluation Metrics**
+
+```python
+acc = accuracy_score(y_test, y_pred)
+prec = precision_score(y_test, y_pred)
+rec = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+cm = confusion_matrix(y_test, y_pred)
+```
+
+- **accuracy_score:**  
+  The proportion of all correct predictions (both classes) among all predictions.
+  \[
+  Accuracy = \frac{TP + TN}{TP + TN + FP + FN}
+  \]
+
+- **precision_score:**  
+  Out of all predicted positives, how many were actually positive?
+  \[
+  Precision = \frac{TP}{TP + FP}
+  \]
+
+- **recall_score:**  
+  Out of all actual positives, how many did the model correctly identify?
+  \[
+  Recall = \frac{TP}{TP + FN}
+  \]
+
+- **f1_score:**  
+  The harmonic mean of precision and recall (better when classes are imbalanced).
+  \[
+  F1 = 2 \times \frac{Precision \times Recall}{Precision + Recall}
+  \]
+
+- **confusion_matrix:**  
+  Shows the counts of:
+  ```
+  [[TN, FP],
+   [FN, TP]]
+  ```
+  Where:
+  - TN: True Negatives
+  - FP: False Positives
+  - FN: False Negatives
+  - TP: True Positives
+
+---
+
+### 2. **Print Results**
+
+```python
+print("Confusion Matrix [TN FP; FN TP]:\n", cm)
+print(f"Accuracy: {acc:.3f} | Precision: {prec:.3f} | Recall: {rec:.3f} | F1: {f1:.3f}")
+print('\nClassification report:')
+print(classification_report(y_test, y_pred))
+```
+
+- **Confusion Matrix:**  
+  Prints the counts for each combination of predicted/actual class, so you can see where your model is getting things right or wrong.
+
+- **Metrics:**  
+  Prints the calculated Accuracy, Precision, Recall, and F1 score rounded to three decimals.
+
+- **Classification Report:**  
+  Gives a table showing precision, recall, and f1-score for each class (0: not depressed, 1: depressed), as well as overall averages. This is helpful for quickly seeing how your model performs on each class, especially if the classes are imbalanced.
+
+---
+
+### **Summary**
+
+This block is the **standard way to summarize classification model performance in scikit-learn**.  
+It helps you:
+- Assess overall and per-class performance.
+- Understand trade-offs (e.g., is recall high but precision low?).
+- See the confusion matrix for insight into types of errors (false positives/negatives).
+
+**Interpretation:**  
+- If you care about “catching all depressed students,” focus on recall.
+- If you want “few false alarms,” focus on precision.
+- F1 is a good single number to balance both, especially for imbalanced classes.
+
+Fifth code:
+thresholds_plot = np.linspace(0, 1, 101)
+TPs, TNs, FPs, FNs = [], [], [], []
+precisions, recalls, f1s, accs = [], [], [], []
+for thresh in thresholds_plot:
+    y_thresh = (y_pred_prob >= thresh).astype(int)
+    tn, fp, fn, tp = confusion_matrix(y_test, y_thresh).ravel()
+    TPs.append(tp)
+    TNs.append(tn)
+    FPs.append(fp)
+    FNs.append(fn)
+    precisions.append(tp/(tp+fp) if (tp+fp)>0 else 0)
+    recalls.append(tp/(tp+fn) if (tp+fn)>0 else 0)
+    f1s.append(f1_score(y_test, y_thresh))
+    accs.append(accuracy_score(y_test, y_thresh))
+
+# Plot TP, TN, FP, FN vs threshold
+plt.figure(figsize=(7,5))
+plt.plot(thresholds_plot, TPs, label='TP')
+plt.plot(thresholds_plot, TNs, label='TN')
+plt.plot(thresholds_plot, FPs, label='FP')
+plt.plot(thresholds_plot, FNs, label='FN')
+plt.xlabel('Threshold')
+plt.ylabel('Count')
+plt.title('TP, TN, FP, FN by Threshold')
+plt.legend()
+plt.show()
+
+# Plot evaluation metrics vs threshold
+plt.figure(figsize=(7,5))
+plt.plot(thresholds_plot, precisions, label='Precision')
+plt.plot(thresholds_plot, recalls, label='Recall')
+plt.plot(thresholds_plot, f1s, label='F1-score')
+plt.plot(thresholds_plot, accs, label='Accuracy')
+plt.xlabel('Threshold')
+plt.ylabel('Metric Value')
+plt.title('Evaluation Metrics by Threshold')
+plt.legend()
+plt.show()
+
+Let's break down and **explain your code** step by step. This code helps you analyze how different prediction thresholds affect your classification results and metrics in a binary classification problem (like predicting depression).
+
+---
+
+## 1. **Set Up Thresholds**
+
+```python
+thresholds_plot = np.linspace(0, 1, 101)
+```
+- Creates 101 evenly spaced thresholds between 0 and 1 (inclusive), e.g., 0.00, 0.01, ..., 1.00.
+- Each threshold will be used as a cutoff for converting predicted probabilities to binary class predictions.
+
+---
+
+## 2. **Initialize Lists**
+
+```python
+TPs, TNs, FPs, FNs = [], [], [], []
+precisions, recalls, f1s, accs = [], [], [], []
+```
+- Empty lists to store the counts of True Positives (TP), True Negatives (TN), False Positives (FP), False Negatives (FN), and values for precision, recall, F1-score, and accuracy at each threshold.
+
+---
+
+## 3. **Loop Over Thresholds**
+
+```python
+for thresh in thresholds_plot:
+    y_thresh = (y_pred_prob >= thresh).astype(int)
+    tn, fp, fn, tp = confusion_matrix(y_test, y_thresh).ravel()
+    TPs.append(tp)
+    TNs.append(tn)
+    FPs.append(fp)
+    FNs.append(fn)
+    precisions.append(tp/(tp+fp) if (tp+fp)>0 else 0)
+    recalls.append(tp/(tp+fn) if (tp+fn)>0 else 0)
+    f1s.append(f1_score(y_test, y_thresh))
+    accs.append(accuracy_score(y_test, y_thresh))
+```
+- For each threshold:
+  - **Convert probabilities to binary predictions:**  
+    - If the predicted probability is greater than or equal to `thresh`, predict 1 (depressed); otherwise, 0 (not depressed).
+  - **Compute confusion matrix:**  
+    - Gives counts of TN, FP, FN, TP for this threshold.
+  - **Store the counts.**
+  - **Compute and store metrics:**  
+    - Precision = TP/(TP+FP)  
+    - Recall = TP/(TP+FN)  
+    - F1-score (harmonic mean of precision and recall)  
+    - Accuracy = (TP+TN)/total
+
+---
+
+## 4. **Plot TP, TN, FP, FN vs Threshold**
+
+```python
+plt.figure(figsize=(7,5))
+plt.plot(thresholds_plot, TPs, label='TP')
+plt.plot(thresholds_plot, TNs, label='TN')
+plt.plot(thresholds_plot, FPs, label='FP')
+plt.plot(thresholds_plot, FNs, label='FN')
+plt.xlabel('Threshold')
+plt.ylabel('Count')
+plt.title('TP, TN, FP, FN by Threshold')
+plt.legend()
+plt.show()
+```
+- Shows how the number of true positives, true negatives, false positives, and false negatives change as you move the threshold from 0 to 1.
+- **Interpretation:**  
+  - At low thresholds, almost everything is predicted positive (high TP, high FP, low TN, low FN).
+  - At high thresholds, almost everything is predicted negative (high TN, high FN, low TP, low FP).
+
+---
+
+## 5. **Plot Metrics vs Threshold**
+
+```python
+plt.figure(figsize=(7,5))
+plt.plot(thresholds_plot, precisions, label='Precision')
+plt.plot(thresholds_plot, recalls, label='Recall')
+plt.plot(thresholds_plot, f1s, label='F1-score')
+plt.plot(thresholds_plot, accs, label='Accuracy')
+plt.xlabel('Threshold')
+plt.ylabel('Metric Value')
+plt.title('Evaluation Metrics by Threshold')
+plt.legend()
+plt.show()
+```
+- Shows how precision, recall, F1-score, and accuracy change as you sweep the threshold.
+- **Interpretation:**
+  - **Precision** usually increases as the threshold increases (fewer false positives), but recall drops (more false negatives).
+  - **Recall** is highest when the threshold is low (almost everything is predicted positive), then decreases.
+  - **F1-score** balances precision and recall; often peaks at an intermediate threshold.
+  - **Accuracy** may peak where the model balances correct positive and negative predictions.
+
+---
+
+## **Why do this?**
+
+- The default threshold for binary classification is 0.5, but **the best threshold depends on your application**.
+- These plots help you choose a threshold that best meets your goals (e.g., high recall if you want to catch as many depressed students as possible, or high precision if you want fewer false alarms).
+
+---
+
+## **Summary**
+
+- **This code shows how the confusion matrix components and metrics change as you change the decision threshold.**
+- **It helps you visualize and select the best threshold for your specific needs.**
+- **This is a critical step in any real-world binary classification problem, especially with imbalanced data.**
+
+Sixth code:
+# Cost calculation: assume cost_per_positive (hospital) and cost_per_false_negative (missed case)
+cost_per_positive = 1000  # cost for sending a student to hospital (TP or FP)
+cost_per_fn = 5000        # cost for missing a depressed student
+
+costs = []
+for tp, fp, fn in zip(TPs, FPs, FNs):
+    cost = (tp+fp)*cost_per_positive + fn*cost_per_fn
+    costs.append(cost)
+
+# Plot cost vs threshold
+plt.figure(figsize=(7,5))
+plt.plot(thresholds_plot, costs, label='Total Cost')
+plt.xlabel('Threshold')
+plt.ylabel('Cost')
+plt.title('Total Financial Cost vs Threshold')
+plt.legend()
+plt.show()
+
+# Find optimal threshold
+min_cost_idx = np.argmin(costs)
+optimal_threshold = thresholds_plot[min_cost_idx]
+print(f'Optimal threshold (min total cost): {optimal_threshold:.2f} with cost {costs[min_cost_idx]:.2f}')
+
+Here's a **line-by-line explanation** of your code for threshold selection based on financial cost:
+
+---
+
+## 1. **Define Costs**
+
+```python
+cost_per_positive = 1000  # cost for sending a student to hospital (TP or FP)
+cost_per_fn = 5000        # cost for missing a depressed student
+```
+- `cost_per_positive`: The cost you pay *every* time you classify someone as "depressed" (whether truly depressed or not). This covers **all positives**: both true positives (TP) and false positives (FP).
+- `cost_per_fn`: The cost you pay *every* time you miss a truly depressed student (false negative, FN).  
+  This is typically much higher, as missing a real case can be serious.
+
+---
+
+## 2. **Calculate Total Cost at Each Threshold**
+
+```python
+costs = []
+for tp, fp, fn in zip(TPs, FPs, FNs):
+    cost = (tp+fp)*cost_per_positive + fn*cost_per_fn
+    costs.append(cost)
+```
+- For each threshold (you have previously computed TPs, FPs, FNs for all thresholds):
+    - **(tp + fp) \* cost_per_positive**: The total cost for all students sent to hospital (all predicted positives, both correct and incorrect).
+    - **fn \* cost_per_fn**: The total cost for all real depression cases that were missed by the model.
+    - The sum is the **total cost** for that threshold.
+- Store each total cost in the `costs` list.
+
+---
+
+## 3. **Plot Cost vs Threshold**
+
+```python
+plt.figure(figsize=(7,5))
+plt.plot(thresholds_plot, costs, label='Total Cost')
+plt.xlabel('Threshold')
+plt.ylabel('Cost')
+plt.title('Total Financial Cost vs Threshold')
+plt.legend()
+plt.show()
+```
+- Plots the **total cost** as you change the threshold.
+- This shows you visually which threshold minimizes your overall cost.
+
+---
+
+## 4. **Find the Optimal Threshold**
+
+```python
+min_cost_idx = np.argmin(costs)
+optimal_threshold = thresholds_plot[min_cost_idx]
+print(f'Optimal threshold (min total cost): {optimal_threshold:.2f} with cost {costs[min_cost_idx]:.2f}')
+```
+- **Finds the index** of the minimum value in the `costs` list.
+- The **optimal threshold** is the threshold value at that index.
+- Prints out the optimal threshold and the corresponding minimum total cost.
+
+---
+
+## **Summary**
+
+- This code **finds the decision threshold that minimizes the total financial cost** for your specific business/clinical scenario.
+- **Why is this important?**  
+  Standard metrics like accuracy or F1-score may not align with real-world costs.  
+  By incorporating financial (or health) costs, you can make a better, context-aware decision for your model's operating point.
+
+---
+
+**In practice:**  
+- You can adjust `cost_per_positive` and `cost_per_fn` to reflect your real-world priorities, and the code will automatically identify the most cost-effective threshold.
+- This is a crucial step in deploying ML models in domains like healthcare, fraud, etc., where the consequences of errors are not equal!
+
+Seventh code:
+# Refit best model on train for interpretability
+best_lr = LogisticRegression(max_iter=1000, random_state=42, **gs.best_params_)
+best_lr.fit(X_train, y_train)
+y_pred_best = best_lr.predict(X_test)
+y_pred_prob_best = best_lr.predict_proba(X_test)[:,1]
+
+# Analyze TP, TN, FP, FN populations
+df_test = X_test.copy()
+df_test['True'] = y_test.values
+df_test['Pred'] = y_pred_best
+df_test['PredProb'] = y_pred_prob_best
+df_test['Group'] = 'Other'
+df_test.loc[(df_test['True']==1)&(df_test['Pred']==1), 'Group'] = 'TP'
+df_test.loc[(df_test['True']==0)&(df_test['Pred']==0), 'Group'] = 'TN'
+df_test.loc[(df_test['True']==0)&(df_test['Pred']==1), 'Group'] = 'FP'
+df_test.loc[(df_test['True']==1)&(df_test['Pred']==0), 'Group'] = 'FN'
+
+# Compare feature means by group
+group_means = df_test.groupby('Group')[numerical+cat_cols+BINARY_LABELS.keys()].mean(numeric_only=True)
+display(group_means)
+
+# Plot feature distribution for a few important features
+for feat in ['Academic Pressure', 'CGPA', 'Sleep Duration']:
+    plt.figure(figsize=(7,4))
+    sns.boxplot(x='Group', y=feat, data=df_test)
+    plt.title(f'{feat} by TP/TN/FP/FN')
+    plt.show()
+
+# Logistic regression weights (feature importances)
+feature_importance = pd.Series(best_lr.coef_[0], index=X.columns).sort_values(ascending=False)
+plt.figure(figsize=(8,7))
+feature_importance.plot(kind='barh')
+plt.title('Feature Importance (Logistic Regression Weights)')
+plt.show()
+display(feature_importance)
+
+Here's what your code does, step-by-step, with explanations and tips:
+
+---
+
+## 1. **Refit the Best Logistic Regression Model**
+
+```python
+best_lr = LogisticRegression(max_iter=1000, random_state=42, **gs.best_params_)
+best_lr.fit(X_train, y_train)
+y_pred_best = best_lr.predict(X_test)
+y_pred_prob_best = best_lr.predict_proba(X_test)[:,1]
+```
+- You refit a new model using the **best hyperparameters** found by GridSearchCV (`gs.best_params_`).
+- Predict the class (`y_pred_best`) and predicted probability (`y_pred_prob_best`) for the test set.
+
+---
+
+## 2. **Analyze TP, TN, FP, FN Populations**
+
+```python
+df_test = X_test.copy()
+df_test['True'] = y_test.values
+df_test['Pred'] = y_pred_best
+df_test['PredProb'] = y_pred_prob_best
+df_test['Group'] = 'Other'
+df_test.loc[(df_test['True']==1)&(df_test['Pred']==1), 'Group'] = 'TP'
+df_test.loc[(df_test['True']==0)&(df_test['Pred']==0), 'Group'] = 'TN'
+df_test.loc[(df_test['True']==0)&(df_test['Pred']==1), 'Group'] = 'FP'
+df_test.loc[(df_test['True']==1)&(df_test['Pred']==0), 'Group'] = 'FN'
+```
+- You create a new DataFrame `df_test` with the test set features and add:
+  - The true label (`True`)
+  - The predicted label (`Pred`)
+  - The predicted probability (`PredProb`)
+  - The group label (`Group`), which is one of: TP (True Positive), TN (True Negative), FP (False Positive), FN (False Negative).
+- This lets you **easily compare characteristics of samples the model gets right or wrong**.
+
+---
+
+## 3. **Compare Feature Means by Group**
+
+```python
+group_means = df_test.groupby('Group')[numerical+cat_cols+BINARY_LABELS.keys()].mean(numeric_only=True)
+display(group_means)
+```
+- You compute the **mean value of each feature** for each group (TP, TN, FP, FN).
+- This helps you see which features are higher/lower for each outcome; for example, maybe FN have lower CGPA than TP, etc.
+- `display()` is for Jupyter; use `print(group_means)` if in a .py file.
+
+---
+
+## 4. **Boxplots of Feature Distributions by Group**
+
+```python
+for feat in ['Academic Pressure', 'CGPA', 'Sleep Duration']:
+    plt.figure(figsize=(7,4))
+    sns.boxplot(x='Group', y=feat, data=df_test)
+    plt.title(f'{feat} by TP/TN/FP/FN')
+    plt.show()
+```
+- For each chosen feature, this makes a boxplot showing the distribution within each group (TP, TN, FP, FN).
+- **Interpretation:**  
+  - Wide separation between groups suggests the feature is informative.
+  - For example, if FNs have lower CGPA than TPs, the model may be missing depressed students with low grades.
+
+---
+
+## 5. **Logistic Regression Weights (Feature Importances)**
+
+```python
+feature_importance = pd.Series(best_lr.coef_[0], index=X.columns).sort_values(ascending=False)
+plt.figure(figsize=(8,7))
+feature_importance.plot(kind='barh')
+plt.title('Feature Importance (Logistic Regression Weights)')
+plt.show()
+display(feature_importance)
+```
+- Logistic Regression is linear, so each feature has a weight (coefficient).  
+  - **Positive coefficients** increase the log-odds of predicting "depressed".
+  - **Negative coefficients** decrease it.
+- Sorting and plotting shows the most influential features.
+- `display(feature_importance)` shows the ordered list (Jupyter); use `print(feature_importance)` elsewhere.
+
+---
+
+## **Summary**
+
+- You refit and interpret your model, not just by global metrics but by **group-level analysis** (TP, TN, FP, FN).
+- You examine **feature distributions** and **model coefficients** to understand why the model makes its predictions and where it might go wrong.
+- This is essential for **model explainability** and for identifying possible improvements (e.g., more features, fixing bias).
+
+---
+
+**If anything is unclear, or you want more details on interpreting the plots or weights, just ask!**
+
+Fixed task 1 in part a:
+
+categorical = ['Gender', 'Sleep Duration', 'Dietary Habits', 'Degree', 'Have you ever had suicidal thoughts ?', 'Family History of Mental Illness']
+numerical = ['Age', 'Academic Pressure', 'Work Pressure', 'CGPA', 'Study Satisfaction', 'Job Satisfaction', 'Work/Study Hours', 'Financial Stress']
+
+# Categorical features vs Depression
+for col in categorical:
+    plt.figure(figsize=(6,3))
+    sns.countplot(x=col, hue='Depression', data=df)
+    plt.title(f'{col} vs Depression')
+    plt.show()
+
+# Numerical features vs Depression
+for col in numerical:
+    plt.figure(figsize=(6,3))
+    sns.histplot(data=df, x=col, hue='Depression', kde=True, bins=30)
+    plt.title(f'{col} distribution by Depression')
+    plt.show()
+
+# Heatmap of correlations (after encoding categorical for visualization)
+df_viz = df.copy()
+for col in categorical:
+    df_viz[col] = LabelEncoder().fit_transform(df_viz[col].astype(str))
+
+# Only keep numeric columns for correlation
+df_viz_numeric = df_viz.select_dtypes(include=[np.number])
+
+plt.figure(figsize=(14,8))
+sns.heatmap(df_viz_numeric.corr(), annot=True, fmt='.2f', cmap='coolwarm')
+plt.title('Feature Correlation Heatmap')
+plt.show()
+
+Let's break down the code **step by step** and explain what each block is doing:
+
+---
+
+### 1. **Define Feature Lists**
+
+```python
+categorical = [
+    'Gender', 'Sleep Duration', 'Dietary Habits', 'Degree',
+    'Have you ever had suicidal thoughts ?', 'Family History of Mental Illness'
+]
+numerical = [
+    'Age', 'Academic Pressure', 'Work Pressure', 'CGPA',
+    'Study Satisfaction', 'Job Satisfaction', 'Work/Study Hours', 'Financial Stress'
+]
+```
+- `categorical`: List of column names in your DataFrame (`df`) that have **categorical** data (like categories, groups, or yes/no answers).
+- `numerical`: List of columns with **numerical** data (numbers and continuous values).
+
+---
+
+### 2. **Visualize Categorical Features vs Depression**
+
+```python
+for col in categorical:
+    plt.figure(figsize=(6,3))
+    sns.countplot(x=col, hue='Depression', data=df)
+    plt.title(f'{col} vs Depression')
+    plt.show()
+```
+- **Loop through each categorical feature.**
+    - `plt.figure(figsize=(6,3))`: Set the size of the plot.
+    - `sns.countplot(x=col, hue='Depression', data=df)`: Create a bar plot showing the count of each category in `col`, split by the values in the `Depression` column.
+        - This visualizes how the distribution of each category differs between people with and without depression.
+    - `plt.title(...)`: Add a title.
+    - `plt.show()`: Display the plot.
+
+---
+
+### 3. **Visualize Numerical Features vs Depression**
+
+```python
+for col in numerical:
+    plt.figure(figsize=(6,3))
+    sns.histplot(data=df, x=col, hue='Depression', kde=True, bins=30)
+    plt.title(f'{col} distribution by Depression')
+    plt.show()
+```
+- **Loop through each numerical feature.**
+    - `plt.figure(figsize=(6,3))`: Set plot size.
+    - `sns.histplot(...)`: Create a histogram for column `col`, with different colors for each `Depression` group.
+        - `kde=True`: Add a smooth density curve.
+        - `bins=30`: Number of bins in the histogram.
+    - `plt.title(...)`: Add a suitable title.
+    - `plt.show()`: Show the plot.
+- **Purpose:** To compare the distribution of numeric features between the depression groups.
+
+---
+
+### 4. **Prepare Data for Correlation Heatmap**
+
+```python
+df_viz = df.copy()
+for col in categorical:
+    df_viz[col] = LabelEncoder().fit_transform(df_viz[col].astype(str))
+```
+- **Copy the original DataFrame** (`df_viz = df.copy()`).
+- **Convert categorical columns to numeric codes** using `LabelEncoder` (since correlation requires numeric values).
+    - For each categorical column, replace its values with integer codes.
+
+---
+
+### 5. **Select Only Numeric Columns**
+
+```python
+df_viz_numeric = df_viz.select_dtypes(include=[np.number])
+```
+- **Keep only columns with numeric data types** in `df_viz_numeric` (after encoding categoricals).
+
+---
+
+### 6. **Plot the Correlation Heatmap**
+
+```python
+plt.figure(figsize=(14,8))
+sns.heatmap(df_viz_numeric.corr(), annot=True, fmt='.2f', cmap='coolwarm')
+plt.title('Feature Correlation Heatmap')
+plt.show()
+```
+- `plt.figure(figsize=(14,8))`: Set plot size.
+- `sns.heatmap(...)`: Plot a heatmap of the correlation matrix (shows how strongly pairs of features are related).
+    - `annot=True`: Show correlation values in the heatmap.
+    - `fmt='.2f'`: Format correlation values to 2 decimal places.
+    - `cmap='coolwarm'`: Use a color scheme for positive/negative correlation.
+- `plt.title(...)`: Add a suitable title.
+- `plt.show()`: Show the plot.
+
+---
+
+## **Summary Table**
+
+| Step | What It Does | Why |
+|------|--------------|-----|
+| 1    | Define feature lists | Organize columns by type for analysis |
+| 2    | Plot counts of categorical features vs depression | See categorical feature distribution split by depression status |
+| 3    | Plot distributions of numerical features vs depression | See if depression groups differ in numeric features |
+| 4    | Encode categoricals numerically | Prepare for correlation analysis |
+| 5    | Select only numeric columns | Correlation only works with numbers |
+| 6    | Plot correlation heatmap | Visualize all feature relationships |
+
+---
+
+**In short:**  
+This code provides visual and statistical insights into how each feature in your dataset relates to depression, using both categorical and numerical data.

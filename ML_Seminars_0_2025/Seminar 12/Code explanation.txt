@@ -1,0 +1,1128 @@
+First code:
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor, plot_tree
+
+np.random.seed(42)
+x1 = np.random.normal(size=300)
+x2 = np.random.normal(size=300)
+error = 2 * np.random.normal(size=300)
+y1 = 1 + (2 * x1) + (3 * x2) + error
+
+x = np.column_stack((x1, x2)) #Stack 1-D arrays as columns into a 2-D array.
+
+lr = LinearRegression()
+lr.fit(x, y1)
+lr_pred_y1 = lr.predict(x)
+
+plt.figure()
+plt.scatter(y1, lr_pred_y1, color = 'yellow', label = 'data', alpha = 0.6)
+plt.plot([min(y1), max(y1)], [min(y1), max(y1)], color='red', linestyle='--', label="Perfect Fit")
+plt.xlabel('Predicted y')
+plt.ylabel('Actual y')
+plt.legend()
+plt.title('Linear Regression')
+plt.show()
+
+print("Linear Regression Coefficients:", lr.coef_)
+print("Linear Regression Intercept:", lr.intercept_)
+
+Here’s a step-by-step explanation of your code:
+
+---
+
+#### 1. **Importing Libraries**
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor, plot_tree
+```
+- **numpy**: For numerical operations and generating random numbers.
+- **pandas**: Commonly used for data manipulation, but not used in this code.
+- **matplotlib.pyplot**: For plotting graphs.
+- **sklearn.linear_model.LinearRegression**: For linear regression modeling.
+- **sklearn.tree.DecisionTreeRegressor, plot_tree**: For decision tree modeling and visualization (not used in this code).
+
+---
+
+#### 2. **Generating Random Data**
+
+```python
+np.random.seed(42)
+x1 = np.random.normal(size=300)
+x2 = np.random.normal(size=300)
+error = 2 * np.random.normal(size=300)
+y1 = 1 + (2 * x1) + (3 * x2) + error
+```
+- **np.random.seed(42)**: Sets the seed for reproducibility, so results are the same every time.
+- **x1, x2**: Generate 300 random numbers each from a normal distribution (mean=0, std=1).
+- **error**: Generates random noise (scaled by 2) for realism.
+- **y1**: Target variable defined using a linear equation:  
+  `y1 = 1 + 2*x1 + 3*x2 + error`
+
+---
+
+#### 3. **Preparing the Feature Matrix**
+
+```python
+x = np.column_stack((x1, x2))
+```
+- Stacks `x1` and `x2` as columns to make a 2D array of shape (300, 2), suitable for model training.
+
+---
+
+#### 4. **Linear Regression Model**
+
+```python
+lr = LinearRegression()
+lr.fit(x, y1)
+lr_pred_y1 = lr.predict(x)
+```
+- **lr = LinearRegression()**: Creates a Linear Regression model.
+- **lr.fit(x, y1)**: Trains (fits) the model to predict `y1` from `x1` and `x2`.
+- **lr_pred_y1 = lr.predict(x)**: Predicts `y1` values using the trained model.
+
+---
+
+#### 5. **Plotting the Results**
+
+```python
+plt.figure()
+plt.scatter(y1, lr_pred_y1, color = 'yellow', label = 'data', alpha = 0.6)
+plt.plot([min(y1), max(y1)], [min(y1), max(y1)], color='red', linestyle='--', label="Perfect Fit")
+plt.xlabel('Predicted y')
+plt.ylabel('Actual y')
+plt.legend()
+plt.title('Linear Regression')
+plt.show()
+```
+- **plt.figure()**: Starts a new figure.
+- **plt.scatter(y1, lr_pred_y1, ...)**: Scatter plot of actual vs. predicted values.
+- **plt.plot([...], [...], ...)**: Plots a red dashed line for perfect prediction (where predicted = actual).
+- **plt.xlabel, plt.ylabel, plt.legend, plt.title**: Labels and title for the plot.
+- **plt.show()**: Displays the plot.
+
+---
+
+#### 6. **Printing Model Parameters**
+
+```python
+print("Linear Regression Coefficients:", lr.coef_)
+print("Linear Regression Intercept:", lr.intercept_)
+```
+- **lr.coef_**: The model’s estimated coefficients for `x1` and `x2`.
+- **lr.intercept_**: The model’s estimated intercept (constant term).
+
+---
+
+### **Summary**
+
+- Generates synthetic data for two features (`x1`, `x2`) and a target (`y1`) with noise.
+- Trains a linear regression model to fit this data.
+- Plots actual vs. predicted values to show model performance.
+- Prints out the coefficients and intercept learned by the model.
+
+Let me know if you want further details or an explanation of any specific part!
+
+Second code:
+dtr = DecisionTreeRegressor(max_depth = 7, random_state = 42) #fully fit, if I will get more depth(10, 15) it will be the same as 7
+dtr2 = DecisionTreeRegressor(max_depth = 2, random_state = 42)
+
+dtr.fit(x, y1)
+dtr2.fit(x, y1)
+
+dtr_pred_y1 = dtr.predict(x)
+dtr_pred_y1_2 = dtr2.predict(x)
+
+plt.figure()
+plot_tree(dtr, feature_names = ['x1', 'x2'], filled = True)
+plt.title('Decision Tree Regression(max_depth = 7)')
+plt.show()
+
+plt.figure()
+plot_tree(dtr2, feature_names = ['x1', 'x2'], filled = True)
+plt.title('Decision Tree Regression(max_depth =2)')
+plt.show()
+
+Here’s a step-by-step explanation of your code block:
+
+---
+
+### 1. **Creating Decision Tree Regressors**
+
+```python
+dtr = DecisionTreeRegressor(max_depth = 7, random_state = 42) #fully fit, if I will get more depth(10, 15) it will be the same as 7
+dtr2 = DecisionTreeRegressor(max_depth = 2, random_state = 42)
+```
+- `dtr`: Decision Tree Regressor with a maximum depth of 7.
+  - The comment suggests that increasing the depth further (to 10, 15, etc.) won’t change the tree—possibly because the data can be fully fit with depth 7.
+- `dtr2`: Another Decision Tree Regressor, but with a shallow max depth of 2 (less complex, likely to underfit).
+
+---
+
+### 2. **Fitting the Models**
+
+```python
+dtr.fit(x, y1)
+dtr2.fit(x, y1)
+```
+- Both models are trained (fit) to predict `y1` from the features `x` (which includes `x1` and `x2`).
+
+---
+
+### 3. **Predicting with the Models**
+
+```python
+dtr_pred_y1 = dtr.predict(x)
+dtr_pred_y1_2 = dtr2.predict(x)
+```
+- `dtr_pred_y1`: Predictions from the deep tree (`max_depth = 7`), likely to fit the data very closely.
+- `dtr_pred_y1_2`: Predictions from the shallow tree (`max_depth = 2`), likely to be smoother and less precise.
+
+---
+
+### 4. **Visualizing the Trees**
+
+```python
+plt.figure()
+plot_tree(dtr, feature_names = ['x1', 'x2'], filled = True)
+plt.title('Decision Tree Regression(max_depth = 7)')
+plt.show()
+```
+- Creates a new figure.
+- Plots the structure of the deep decision tree (`max_depth = 7`).
+- Nodes are color-filled for better readability.
+- Title indicates the tree’s depth.
+- Displays the plot.
+
+```python
+plt.figure()
+plot_tree(dtr2, feature_names = ['x1', 'x2'], filled = True)
+plt.title('Decision Tree Regression(max_depth =2)')
+plt.show()
+```
+- Similarly, this block plots the shallow tree (`max_depth = 2`).
+
+---
+
+### **Summary**
+
+- Two decision tree models are created (one deep, one shallow).
+- Both are trained on the same data.
+- Their structures are visualized so you can compare:
+  - The deep tree, which fits the data closely and may overfit.
+  - The shallow tree, which is simpler and less likely to overfit.
+
+Let me know if you want a comparison of their predictions or additional explanation!
+
+Third code:
+plt.figure()
+plt.scatter(y1, dtr_pred_y1, color = 'yellow', alpha = 0.6)
+plt.scatter(y1, dtr_pred_y1_2, color = 'red', alpha = 0.6)
+plt.xlabel('Predicted y')
+plt.ylabel('Actual y')
+plt.title('Decision Tree Regression(max_depth = 7 and 2)')
+plt.show()
+
+Here’s a step-by-step explanation of your plotting code:
+
+---
+
+### 1. **Create a New Figure**
+
+```python
+plt.figure()
+```
+- Starts a new plot/figure window, ensuring this plot is separate from any others.
+
+---
+
+### 2. **Scatter Plot for Deep Tree Predictions**
+
+```python
+plt.scatter(y1, dtr_pred_y1, color = 'yellow', alpha = 0.6)
+```
+- Plots the actual values `y1` (on the x-axis) against the predicted values from the deep decision tree (`dtr_pred_y1`, max_depth=7, on the y-axis).
+- Points are yellow and semi-transparent (`alpha=0.6`), making it easier to see overlapping points.
+
+---
+
+### 3. **Scatter Plot for Shallow Tree Predictions**
+
+```python
+plt.scatter(y1, dtr_pred_y1_2, color = 'red', alpha = 0.6)
+```
+- Overlays a second scatter plot on the same axes.
+- Actual values `y1` (on the x-axis) vs. predictions from the shallow tree (`dtr_pred_y1_2`, max_depth=2, on the y-axis).
+- Points are red and also semi-transparent.
+
+---
+
+### 4. **Label Axes**
+
+```python
+plt.xlabel('Predicted y')
+plt.ylabel('Actual y')
+```
+- **Note:** Here, you have `Predicted y` on the x-axis and `Actual y` on the y-axis.  
+  In your code, you plot `plt.scatter(y1, ...)` so `y1` is on the x-axis, but `y1` is actually the actual value, so the labels may be swapped.
+- If you want the x-axis to be "Actual y" and the y-axis to be "Predicted y", you should use: `plt.scatter(y1, dtr_pred_y1, ...)` as you have, but label accordingly.
+
+---
+
+### 5. **Set Plot Title**
+
+```python
+plt.title('Decision Tree Regression(max_depth = 7 and 2)')
+```
+- Adds a title indicating both trees are being compared in this plot.
+
+---
+
+### 6. **Show the Plot**
+
+```python
+plt.show()
+```
+- Renders and displays the plot.
+
+---
+
+### **Summary**
+
+This code compares how well two different decision tree regressors (one deep, one shallow) predict the target variable, using scatter plots.  
+- **Yellow points**: Deep tree predictions (should fit the data closely).
+- **Red points**: Shallow tree predictions (should be more generalized, less precise).
+- Both are compared visually against the actual `y1` values.
+
+If you want to add a reference line ("perfect fit"), you can include:
+```python
+plt.plot([min(y1), max(y1)], [min(y1), max(y1)], color='blue', linestyle='--')
+```
+Let me know if you want further details or improvements!
+
+Fourth code:
+from sklearn.metrics import mean_squared_error
+
+mse_lr = mean_squared_error(y1, lr_pred_y1)
+mse_drt = mean_squared_error(y1, dtr_pred_y1)
+mse_drt2 = mean_squared_error(y1, dtr_pred_y1_2)
+
+
+print(f"Linear Regression MSE: {mse_lr:.3f}")
+print(f"Regression Tree MSE(depth=7): {mse_drt:.3f}")
+print(f"Regression Tree MSE(depth=2): {mse_drt2:.3f}")
+
+Here’s a step-by-step explanation of your code:
+
+---
+
+### 1. **Import the Metric Function**
+
+```python
+from sklearn.metrics import mean_squared_error
+```
+- Imports `mean_squared_error` from scikit-learn, a function to compute the Mean Squared Error (MSE) between actual and predicted values.
+
+---
+
+### 2. **Calculate Mean Squared Errors**
+
+```python
+mse_lr = mean_squared_error(y1, lr_pred_y1)
+mse_drt = mean_squared_error(y1, dtr_pred_y1)
+mse_drt2 = mean_squared_error(y1, dtr_pred_y1_2)
+```
+- **mse_lr**: MSE for predictions from the Linear Regression model.
+- **mse_drt**: MSE for predictions from the Regression Tree with `max_depth=7` (deep tree).
+- **mse_drt2**: MSE for predictions from the Regression Tree with `max_depth=2` (shallow tree).
+
+MSE measures the average squared difference between the actual (`y1`) and predicted values. Lower MSE means a better fit.
+
+---
+
+### 3. **Print the Results**
+
+```python
+print(f"Linear Regression MSE: {mse_lr:.3f}")
+print(f"Regression Tree MSE(depth=7): {mse_drt:.3f}")
+print(f"Regression Tree MSE(depth=2): {mse_drt2:.3f}")
+```
+- Nicely prints out the calculated MSE values for each model, rounded to three decimal places.
+- This helps you compare how well each model fits your data.
+
+---
+
+### **Summary**
+
+This block evaluates and compares the performance of:
+- Linear Regression
+- A deep Regression Tree (max_depth=7)
+- A shallow Regression Tree (max_depth=2)
+
+using the Mean Squared Error (MSE) metric. Lower values indicate a better fit to the data.
+
+Let me know if you want an interpretation of the results or have further questions!
+
+Fifth code:
+x11 = (x1 > 0).astype(int)
+x22 = (x2 > 0).astype(int)
+
+y = 1 + (2 * x11) + (3 * x22) + error
+x00 = np.column_stack((x11, x22))
+
+lr_sf = LinearRegression()
+lr_sf.fit(x00, y)
+lr_sf_pred_y = lr_sf.predict(x00)
+plt.figure()
+plt.scatter(y, lr_sf_pred_y, color = 'yellow', label = 'data', alpha = 0.6)
+plt.xlabel('Predicted y')
+plt.ylabel('Actual y')
+plt.title('Linear Regression for step function')
+plt.show()
+
+Here’s a step-by-step explanation of your new code block:
+
+---
+
+### 1. **Create Step Function Features**
+
+```python
+x11 = (x1 > 0).astype(int)
+x22 = (x2 > 0).astype(int)
+```
+- `x11`: Converts values in `x1` to 1 if greater than 0, else 0.
+- `x22`: Converts values in `x2` to 1 if greater than 0, else 0.
+- **Result:** Both `x11` and `x22` are now binary (0 or 1). This is a “step function” transformation.
+
+---
+
+### 2. **Generate Target Variable with Step Features**
+
+```python
+y = 1 + (2 * x11) + (3 * x22) + error
+```
+- `y` is defined as:
+  - 1 (intercept)
+  - Plus 2 if `x1 > 0` (i.e., `x11` is 1)
+  - Plus 3 if `x2 > 0` (i.e., `x22` is 1)
+  - Plus some random noise (`error`)
+- The target depends on whether each original feature is positive, with noise added.
+
+---
+
+### 3. **Stack Binary Features for Model Input**
+
+```python
+x00 = np.column_stack((x11, x22))
+```
+- Combines `x11` and `x22` into a 2D array for model training.
+
+---
+
+### 4. **Fit Linear Regression to Step Features**
+
+```python
+lr_sf = LinearRegression()
+lr_sf.fit(x00, y)
+lr_sf_pred_y = lr_sf.predict(x00)
+```
+- `lr_sf`: Creates a new linear regression model.
+- `.fit(x00, y)`: Trains the model to predict `y` from the binary features.
+- `.predict(x00)`: Makes predictions from the trained model.
+
+---
+
+### 5. **Plot Actual vs. Predicted Values**
+
+```python
+plt.figure()
+plt.scatter(y, lr_sf_pred_y, color = 'yellow', label = 'data', alpha = 0.6)
+plt.xlabel('Predicted y')
+plt.ylabel('Actual y')
+plt.title('Linear Regression for step function')
+plt.show()
+```
+- Plots the predicted values (`lr_sf_pred_y`) against the true values (`y`).
+- Yellow points, semi-transparent, with axis labels and a title.
+
+---
+
+### **Summary**
+
+- Your features are now step functions—binary indicators of whether the original `x1` and `x2` are positive.
+- The target is a linear function of these step features, plus noise.
+- You fit a linear regression to this, which should recover coefficients close to 2 and 3 if the noise isn’t overwhelming.
+- The plot shows how well the model fits the step-function-transformed data.
+
+Let me know if you want to see the coefficients or further analysis!
+
+Sixth code:
+dtr_sf = DecisionTreeRegressor(max_depth = 2, random_state = 42)
+dtr_sf.fit(x00, y)
+dtr_sf_pred_y = dtr_sf.predict(x00)
+plt.figure()
+plt.scatter(y1, dtr_sf_pred_y, color = 'red', alpha = 0.6)
+plt.xlabel('Predicted y')
+plt.ylabel('Actual y')
+plt.title('Decision Tree Regression for step function(max_depth = 2)')
+plt.show()
+
+plt.figure()
+plot_tree(dtr_sf, feature_names = ['x11', 'x22'], filled = True)
+plt.title('Decision Tree Regressio for step function(max_depth = 2)')
+plt.show()
+
+Here’s a step-by-step explanation of your code block:
+
+---
+
+### 1. **Create and Fit a Decision Tree Regressor for Step Function Data**
+
+```python
+dtr_sf = DecisionTreeRegressor(max_depth = 2, random_state = 42)
+dtr_sf.fit(x00, y)
+```
+- `dtr_sf`: Creates a decision tree regressor with a maximum depth of 2. This will produce a simple tree that can only split twice, limiting its complexity.
+- `.fit(x00, y)`: Trains the model using the binary step-function features (`x11`, `x22`, stacked in `x00`) to predict the step-function target (`y`).
+
+---
+
+### 2. **Predict Using the Trained Tree**
+
+```python
+dtr_sf_pred_y = dtr_sf.predict(x00)
+```
+- Makes predictions on the training data using the fitted decision tree.
+
+---
+
+### 3. **Scatter Plot: Actual vs. Predicted Values**
+
+```python
+plt.figure()
+plt.scatter(y1, dtr_sf_pred_y, color = 'red', alpha = 0.6)
+plt.xlabel('Predicted y')
+plt.ylabel('Actual y')
+plt.title('Decision Tree Regression for step function(max_depth = 2)')
+plt.show()
+```
+- Plots a scatter plot with:
+  - X-axis: `y1` (the original linear target from earlier)
+  - Y-axis: predictions from the step-function decision tree
+  - Red points, semi-transparent
+- **Note:** You are comparing predictions made for the step-function target (`y`) to the original continuous target (`y1`). Usually, you’d compare `y` to `dtr_sf_pred_y` for consistency, unless you want to directly see how well the step-function model predicts the original target.
+
+---
+
+### 4. **Visualize the Tree Structure**
+
+```python
+plt.figure()
+plot_tree(dtr_sf, feature_names = ['x11', 'x22'], filled = True)
+plt.title('Decision Tree Regressio for step function(max_depth = 2)')
+plt.show()
+```
+- Plots the structure of the decision tree using the binary features.
+- Each node shows which split is made (on `x11` or `x22`), and the leaves show the predicted values.
+
+---
+
+### **Summary**
+
+- You train a simple decision tree (max depth 2) on binary step features.
+- You plot its predictions against the original linear target (`y1`), which is unusual and may be for illustrative purposes.
+- You also visualize the tree to see its splitting logic.
+- If you want to compare the model’s predictions to the step-function target (`y`), you could plot `y` vs. `dtr_sf_pred_y`.
+
+Let me know if you want clarification or further analysis!
+
+Seventh code:
+df = pd.read_csv("tax_data.csv")
+
+df_low_income = df[df['Annual_Income'] < 60000]
+df_high_income = df[df['Annual_Income'] >= 60000]
+
+def gini_impurity(df, column):
+    proportions = df[column].value_counts(normalize=True)
+    gini = 1 - sum(proportions ** 2)
+    return gini
+
+gini_low_income = gini_impurity(df_low_income, 'Tax_Regime')
+gini_high_income = gini_impurity(df_high_income, 'Tax_Regime')
+
+gini_low_income, gini_high_income
+
+Here’s a step-by-step explanation of your code:
+
+---
+
+### 1. **Read the Data**
+
+```python
+df = pd.read_csv("tax_data.csv")
+```
+- Loads the CSV file `tax_data.csv` into a pandas DataFrame named `df`.
+- Assumes the CSV has at least columns `Annual_Income` and `Tax_Regime`.
+
+---
+
+### 2. **Split the Data by Income**
+
+```python
+df_low_income = df[df['Annual_Income'] < 60000]
+df_high_income = df[df['Annual_Income'] >= 60000]
+```
+- `df_low_income`: All rows where `Annual_Income` is **less than 60,000**.
+- `df_high_income`: All rows where `Annual_Income` is **60,000 or more**.
+
+---
+
+### 3. **Define Gini Impurity Function**
+
+```python
+def gini_impurity(df, column):
+    proportions = df[column].value_counts(normalize=True)
+    gini = 1 - sum(proportions ** 2)
+    return gini
+```
+- `gini_impurity` computes the Gini impurity for a specific column in a DataFrame:
+  - `value_counts(normalize=True)` gives the proportion of each unique value.
+  - `sum(proportions ** 2)` calculates the sum of squared proportions.
+  - Gini impurity formula: \( 1 - \sum p_i^2 \), where \( p_i \) is the proportion of label \( i \).
+
+---
+
+### 4. **Calculate Gini Impurity for Each Group**
+
+```python
+gini_low_income = gini_impurity(df_low_income, 'Tax_Regime')
+gini_high_income = gini_impurity(df_high_income, 'Tax_Regime')
+```
+- Calculates the Gini impurity of the `Tax_Regime` column for both low- and high-income subsets.
+
+---
+
+### 5. **Return the Results**
+
+```python
+gini_low_income, gini_high_income
+```
+- Outputs the Gini impurity for both groups as a tuple.
+
+---
+
+## **Summary**
+
+- **Purpose:** Measure the diversity (impurity) of the `Tax_Regime` classification within low vs. high income groups.
+- **Gini Impurity:** Ranges from 0 (all samples in one category) to a maximum of 1 (evenly distributed categories).
+- **Interpretation:**  
+  - **Lower Gini:** More homogeneity in tax regime assignment (most people in that group have the same regime).
+  - **Higher Gini:** More diversity in tax regime assignment.
+
+Let me know if you want to see example outputs or an interpretation of results!
+
+Eighth code:
+total_samples = 80
+left_child_samples = 43
+right_child_samples = 37
+
+G_left = 0.49777777777777776
+G_right = 0.44907197827071077
+
+p_left = left_child_samples / total_samples
+p_right = right_child_samples / total_samples
+
+G_t = p_left * G_left + p_right * G_right
+G_t
+
+Let’s break down your code step by step:
+
+---
+
+### **Step-by-Step Explanation:**
+
+#### 1. **Initialize Sample Sizes**
+```python
+total_samples = 80
+left_child_samples = 43
+right_child_samples = 37
+```
+- You have a parent node in a decision tree with 80 samples, split into two child nodes: left (43 samples), right (37 samples).
+
+#### 2. **Gini Impurity Values for Children**
+```python
+G_left = 0.49777777777777776
+G_right = 0.44907197827071077
+```
+- Gini impurity for the left child: ~0.498.
+- Gini impurity for the right child: ~0.449.
+
+#### 3. **Calculate Proportion of Samples in Each Child**
+```python
+p_left = left_child_samples / total_samples  # 43/80 = 0.5375
+p_right = right_child_samples / total_samples # 37/80 = 0.4625
+```
+- Proportion in left child: 0.5375
+- Proportion in right child: 0.4625
+
+#### 4. **Calculate Weighted Gini Impurity After the Split**
+```python
+G_t = p_left * G_left + p_right * G_right
+```
+- This is the **weighted average Gini impurity** for the split (also called the "Gini after split"):
+    - \( G_t = (0.5375 \times 0.4978) + (0.4625 \times 0.4491) \)
+    - \( G_t \approx 0.2675 + 0.2076 = 0.4751 \)
+
+#### 5. **Result**
+```python
+G_t
+```
+- The value of `G_t` will be **approximately 0.475**.
+
+---
+
+### **Summary**
+- **G_t** is the weighted Gini impurity of the split.
+- It tells you the impurity of the dataset after splitting based on the proportions and impurities of the child nodes.
+- Lower values of `G_t` indicate a better split (more pure groups).
+
+Would you like to see how to compute the information gain for this split or need further explanation?
+
+Ninth code:
+
+from sklearn.model_selection import train_test_split
+
+print("Basic Info:\n", df.info())
+print("\nSummary Statistics:\n", df.describe())
+
+print("\nValue Counts:")
+print("\nCountry:\n", df['Country'].value_counts())
+print("\nIndustry:\n", df['Industry'].value_counts())
+print("\nTax_Regime:\n", df['Tax_Regime'].value_counts())
+
+df_encoded = pd.get_dummies(df, columns=['Country', 'Industry'], drop_first=True)
+
+x = df_encoded.drop('Tax_Regime', axis=1)
+y = df['Tax_Regime']
+
+x_train, x_test, y_train, y_test = train_test_split(
+    x, y, test_size=0.3, random_state=42, stratify=y
+)
+
+print(f"\nX_train shape: {x_train.shape}")
+print(f"X_test shape: {x_test.shape}")
+print(f"y_train shape: {y_train.shape}")
+print(f"y_test shape: {y_test.shape}")
+
+Here’s a step-by-step explanation of your code:
+
+---
+
+### 1. **Import and Data Overview**
+
+```python
+from sklearn.model_selection import train_test_split
+
+print("Basic Info:\n", df.info())
+print("\nSummary Statistics:\n", df.describe())
+
+print("\nValue Counts:")
+print("\nCountry:\n", df['Country'].value_counts())
+print("\nIndustry:\n", df['Industry'].value_counts())
+print("\nTax_Regime:\n", df['Tax_Regime'].value_counts())
+```
+- **df.info()**: Shows column names, data types, and non-null counts.
+- **df.describe()**: Shows summary statistics (mean, std, min, max, etc.) for numeric columns.
+- **df['Country'].value_counts()**: Counts of unique values in 'Country'.
+- **df['Industry'].value_counts()**: Counts of unique values in 'Industry'.
+- **df['Tax_Regime'].value_counts()**: Counts of unique values in 'Tax_Regime'.
+
+---
+
+### 2. **Encoding Categorical Variables**
+
+```python
+df_encoded = pd.get_dummies(df, columns=['Country', 'Industry'], drop_first=True)
+```
+- Converts categorical columns 'Country' and 'Industry' into dummy/indicator variables (one-hot encoding).
+- **drop_first=True**: Drops the first category to avoid multicollinearity (dummy variable trap).
+
+---
+
+### 3. **Splitting Features and Target**
+
+```python
+x = df_encoded.drop('Tax_Regime', axis=1)
+y = df['Tax_Regime']
+```
+- **x**: All columns except 'Tax_Regime' (your features).
+- **y**: Just the 'Tax_Regime' column (your target for prediction).
+
+---
+
+### 4. **Train-Test Split**
+
+```python
+x_train, x_test, y_train, y_test = train_test_split(
+    x, y, test_size=0.3, random_state=42, stratify=y
+)
+```
+- Splits the data into training and testing sets.
+- **test_size=0.3**: 30% for testing, 70% for training.
+- **random_state=42**: Ensures reproducibility.
+- **stratify=y**: Ensures the train/test split preserves the proportion of categories in 'Tax_Regime'.
+
+---
+
+### 5. **Print Split Shapes**
+
+```python
+print(f"\nX_train shape: {x_train.shape}")
+print(f"X_test shape: {x_test.shape}")
+print(f"y_train shape: {y_train.shape}")
+print(f"y_test shape: {y_test.shape}")
+```
+- Prints the shapes (dimensions) of the resulting train and test datasets.
+
+---
+
+### **Summary**
+
+- The code explores and summarizes your dataset, then encodes categorical variables.
+- It splits the data into training and testing sets (with stratification to preserve class balance).
+- You are now ready to train and evaluate machine learning models on this data.
+
+Let me know if you want to proceed with model training or need further analysis!
+
+Tenth code:
+from sklearn.tree import DecisionTreeClassifier
+
+dt_cl = DecisionTreeClassifier(criterion='gini',class_weight='balanced', max_depth=4, min_samples_leaf=4)
+dt_cl.fit(x_train, y_train)
+
+Here’s a step-by-step explanation of your code:
+
+---
+
+### 1. **Import the Classifier**
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+```
+- Imports the `DecisionTreeClassifier` class from scikit-learn, which is used for classification tasks (i.e., predicting categories).
+
+---
+
+### 2. **Instantiate the Decision Tree Classifier**
+
+```python
+dt_cl = DecisionTreeClassifier(
+    criterion='gini',
+    class_weight='balanced',
+    max_depth=4,
+    min_samples_leaf=4
+)
+```
+- **criterion='gini'**: Uses the Gini impurity to decide splits (default). This measures how pure each split is.
+- **class_weight='balanced'**: Adjusts weights inversely proportional to class frequencies, which helps if your dataset is imbalanced.
+- **max_depth=4**: The tree will have at most 4 levels (prevents overfitting and keeps the model interpretable).
+- **min_samples_leaf=4**: Each leaf node must have at least 4 training samples (prevents overfitting on very small groups).
+
+---
+
+### 3. **Train the Model**
+
+```python
+dt_cl.fit(x_train, y_train)
+```
+- Fits (trains) the decision tree classifier on your training feature matrix (`x_train`) and corresponding labels (`y_train`).
+- After this, `dt_cl` is ready to make predictions on new data.
+
+---
+
+### **Summary**
+
+- You created a decision tree classifier with Gini impurity, class balancing, restricted depth, and minimum leaf size.
+- You trained it on your training data.
+- The model is now ready for prediction and evaluation.
+
+Let me know if you want to see how to make predictions, evaluate the model, or visualize the tree!
+
+Eleventh code:
+y_pred = dt_cl.predict(x_test)
+#Which scoring function should I use?
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# Accuracy
+print("Accuracy:", accuracy_score(y_test, y_pred))
+
+# Confusion Matrix
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+# Classification Report
+print("Classification Report:\n", classification_report(y_test, y_pred, zero_division=0))
+
+
+Here is a **step-by-step explanation** of your evaluation code for a classification model (e.g., `DecisionTreeClassifier`):
+
+---
+
+## 1. **Make Predictions**
+```python
+y_pred = dt_cl.predict(x_test)
+```
+- **What this does:**  
+  Uses your trained decision tree classifier (`dt_cl`) to predict class labels for your test features (`x_test`).
+- **Result:**  
+  `y_pred` contains the predicted class for each sample in your test set.
+
+---
+
+## 2. **Import Scoring Functions**
+```python
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+```
+- **What this does:**  
+  Imports commonly used functions for evaluating classification model performance:
+  - `accuracy_score`: Calculates overall accuracy.
+  - `confusion_matrix`: Shows a table of correct and incorrect predictions for each class.
+  - `classification_report`: Provides precision, recall, F1-score, and support for each class.
+
+---
+
+## 3. **Calculate and Print Accuracy**
+```python
+print("Accuracy:", accuracy_score(y_test, y_pred))
+```
+- **What this does:**  
+  Calculates the proportion of correct predictions (`y_pred`) out of all test samples (`y_test`).
+- **When to use:**  
+  - Suitable when classes are balanced (each class has about the same number of samples).
+- **Result:**  
+  A single number between 0 and 1 (or 0% to 100%) representing the model's accuracy.
+
+---
+
+## 4. **Print the Confusion Matrix**
+```python
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+```
+- **What this does:**  
+  Displays a matrix describing the performance of the model by showing actual vs. predicted class counts.
+- **When to use:**  
+  - To analyze which classes the model predicts well or poorly.
+  - Especially useful for multi-class or imbalanced-class problems.
+- **Result:**  
+  A 2D array where rows represent true classes and columns represent predicted classes.
+
+---
+
+## 5. **Print the Classification Report**
+```python
+print("Classification Report:\n", classification_report(y_test, y_pred, zero_division=0))
+```
+- **What this does:**  
+  Provides detailed metrics for each class:
+  - **Precision:** Out of all predicted instances for a class, how many were correct?
+  - **Recall:** Out of all actual instances for a class, how many did the model find?
+  - **F1-score:** Harmonic mean of precision and recall (good overall metric).
+  - **Support:** Number of true instances for each class.
+- **When to use:**  
+  - For detailed per-class evaluation, especially if classes are imbalanced.
+  - `zero_division=0` avoids errors if a class has no predicted samples.
+- **Result:**  
+  A table showing precision, recall, f1-score, and support for each class.
+
+---
+
+## **Which scoring function should you use?**
+- **If your classes are balanced:**  
+  **Accuracy** is a good summary.
+- **If your classes are imbalanced or you care about specific classes:**  
+  Focus on the **classification report** (look at precision, recall, F1-score for each class).
+- **To analyze errors:**  
+  Use the **confusion matrix** to see which classes are being confused.
+
+---
+
+## **Typical Workflow**
+1. **Start** with accuracy for a quick check.
+2. **Inspect** the confusion matrix to see where your model makes mistakes.
+3. **Use** the classification report for a detailed understanding of performance for each class.
+
+---
+
+**Let me know if you want an explanation of any specific metric or need guidance on interpreting your results!**
+
+Twelth code:
+plt.figure
+plot_tree(dt_cl,
+          feature_names=x.columns,
+          class_names=dt_cl.classes_,
+          filled=True,
+          rounded=True)
+plt.title("Decision Tree (max_depth=4)")
+plt.show()
+
+
+Here's a step-by-step explanation of your code for visualizing a decision tree:
+
+---
+
+### 1. **Prepare for Plotting**
+
+```python
+plt.figure
+```
+- This line should be `plt.figure()` (with parentheses) to create a new figure for plotting.
+- Without parentheses, it does nothing — so make sure to fix it!
+
+---
+
+### 2. **Plot the Decision Tree**
+
+```python
+plot_tree(
+    dt_cl,
+    feature_names=x.columns,
+    class_names=dt_cl.classes_,
+    filled=True,
+    rounded=True
+)
+```
+- `plot_tree` is a function from `sklearn.tree` that visualizes a fitted decision tree.
+- **Parameters:**
+  - `dt_cl`: Your trained `DecisionTreeClassifier`.
+  - `feature_names=x.columns`: Names of the features used for splits (taken from your dataframe columns).
+  - `class_names=dt_cl.classes_`: The class labels for your target variable.
+  - `filled=True`: Nodes are colored to indicate impurity.
+  - `rounded=True`: Boxes have rounded corners for nicer visualization.
+
+---
+
+### 3. **Add a Title**
+
+```python
+plt.title("Decision Tree (max_depth=4)")
+```
+- Adds a title to the plot for clarity.
+
+---
+
+### 4. **Show the Plot**
+
+```python
+plt.show()
+```
+- Displays the figure.
+
+---
+
+### **Full Corrected Code**
+
+Here’s the code with the typo fixed:
+
+```python
+import matplotlib.pyplot as plt
+from sklearn.tree import plot_tree
+
+plt.figure(figsize=(16, 8))  # Optional: set figure size
+plot_tree(dt_cl,
+          feature_names=x.columns,
+          class_names=dt_cl.classes_,
+          filled=True,
+          rounded=True)
+plt.title("Decision Tree (max_depth=4)")
+plt.show()
+```
+
+---
+
+### **Summary**
+
+- This code will visually show the structure of your trained decision tree, including the feature splits and how each decision node leads to different classes.
+- Make sure to use `plt.figure()` with parentheses!
+
+Let me know if you want a step-by-step guide on how to interpret the tree visualization!
+
+Thirteenth code:
+depths = [2, 4, 6, None]  #None = full depth
+for d in depths:
+    tree = DecisionTreeClassifier(max_depth=d, class_weight='balanced', min_samples_leaf=5)
+    tree.fit(x_train, y_train)
+    y_pred = tree.predict(x_test)
+    acc = accuracy_score(y_test, y_pred)
+    print(f"Depth={d}, Accuracy={acc:.3f}")
+
+Here's a **step-by-step explanation** of your code:
+
+---
+
+### 1. **Define Tree Depths to Test**
+```python
+depths = [2, 4, 6, None]  # None = full depth
+```
+- You create a list of depths to test for your decision tree:
+  - `2, 4, 6`: Restrict tree to these maximum depths.
+  - `None`: No restriction; tree can grow to its full depth.
+
+---
+
+### 2. **Loop Over Each Depth**
+```python
+for d in depths:
+```
+- Loops through each depth value in the list.
+
+---
+
+### 3. **Create and Train the Decision Tree**
+```python
+    tree = DecisionTreeClassifier(max_depth=d, class_weight='balanced', min_samples_leaf=5)
+    tree.fit(x_train, y_train)
+```
+- For each depth `d`:
+  - **Create a new classifier** with:
+    - `max_depth=d`: The current depth from the list.
+    - `class_weight='balanced'`: Handles imbalanced classes by adjusting class weights.
+    - `min_samples_leaf=5`: Each leaf must have at least 5 samples (to prevent overfitting).
+  - **Train the tree** on the training data.
+
+---
+
+### 4. **Predict on the Test Data**
+```python
+    y_pred = tree.predict(x_test)
+```
+- Use the trained tree to predict labels for the test set.
+
+---
+
+### 5. **Calculate Accuracy**
+```python
+    acc = accuracy_score(y_test, y_pred)
+```
+- Compares your predictions (`y_pred`) to the true test labels (`y_test`) and computes the accuracy (i.e., the fraction of correct predictions).
+
+---
+
+### 6. **Print Results**
+```python
+    print(f"Depth={d}, Accuracy={acc:.3f}")
+```
+- Prints the current tree depth and the corresponding test accuracy, rounded to 3 decimal places.
+
+---
+
+## **Summary**
+- This code lets you **compare the effect of different tree depths** on test accuracy.
+- **Shallow trees** (low depth) may underfit, while **deep trees** (high depth or `None`) may overfit.
+- This is a simple way to tune the `max_depth` hyperparameter and observe its impact.
+
+Let me know if you want to visualize the results or understand which depth is best for your data!

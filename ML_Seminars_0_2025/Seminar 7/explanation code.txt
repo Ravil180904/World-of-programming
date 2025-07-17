@@ -1,0 +1,977 @@
+First code:
+
+def gradient_descent(start_x, iterations = 100, learning_rate = 0.1, stopping_threshold = 1e-6):
+
+    costs = []
+    x = start_x
+    x_values = []
+
+    # Estimation of optimal parameters
+    for i in range(iterations):
+        gradient = 2 * x
+        x_new = x - learning_rate * gradient
+
+        cost = x_new ** 2
+        costs.append(cost)
+        x_values.append(x_new)
+
+        if abs(x_new - x) < stopping_threshold:
+            break
+
+        x = x_new
+        print(f"Iteration {i + 1}: x = {x}, Cost = {cost}")
+
+    #Plot function and gradient descent path
+    x_range = np.linspace(-10, 10, 100)  # X values for plotting
+    y_range = x_range**2  # Function f(x) = x^2
+
+    plt.figure(figsize=(8,6))
+    plt.plot(x_range, y_range, label="f(x) = x^2", color="blue")
+    plt.scatter(x_values, [xi**2 for xi in x_values], color="red", marker='o', label="Gradient Descent Steps")
+    plt.xlabel("x")
+    plt.ylabel("f(x)")
+    plt.title("Gradient Descent Path on f(x) = x^2")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+    #Visualizing cost for all iterations
+    plt.figure(figsize = (8,6))
+    plt.plot(range(len(costs)), costs, marker='o', color='red')
+    plt.title("Cost vs Iterations")
+    plt.ylabel("Cost")
+    plt.xlabel("Iterations")
+    plt.show()
+    return x
+
+x_min = gradient_descent(start_x = 10,learning_rate=0.1)
+print(f"Minimum found at x = {x_min}")
+Explanation: 
+1. Importing Libraries
+import numpy as np
+import matplotlib.pyplot as plt
+
+2. Defining the Gradient Descent Function
+def gradient_descent(start_x, iterations = 100, learning_rate = 0.1, stopping_threshold = 1e-6):
+This function performs gradient descent on the function f(x)=x^2.
+Parameters:
+start_x: Starting value for x.
+iterations: Maximum iterations to run.
+learning_rate: Controls the step size for each update.
+stopping_threshold: If the update step is smaller than this, stop early.
+
+3. Initialization
+costs = []
+x = start_x
+x_values = []
+costs keeps track of the cost (value of f(x)) at each step.
+x is initialized to your starting value.
+x_values will store all updated 
+x_values for plotting.
+
+4. Gradient Descent Iterations
+for i in range(iterations):
+    gradient = 2 * x
+    x_new = x - learning_rate * gradient
+
+    cost = x_new ** 2
+    costs.append(cost)
+    x_values.append(x_new)
+
+    if abs(x_new - x) < stopping_threshold:
+        break
+
+    x = x_new
+    print(f"Iteration {i + 1}: x = {x}, Cost = {cost}")
+For each iteration:
+Compute Gradient: For f(x)=x^2, the derivative f′(x)=2x.
+Update x: Move in the negative direction of the gradient: x_{\text{new}} = x - \text{learning_rate} \times \text{gradient}
+Compute Cost: The value of the function at the new x(i.e., xnew2).
+Store Results: Save cost and new x for later plotting.
+Stopping Condition: If the change in xis less than the threshold, stop early.
+Update x: For the next iteration.
+Print Progress: Shows iterative updates.
+
+5. Plotting the Gradient Descent Path
+x_range = np.linspace(-10, 10, 100)
+y_range = x_range**2
+
+plt.figure(figsize=(8,6))
+plt.plot(x_range, y_range, label="f(x) = x^2", color="blue")
+plt.scatter(x_values, [xi**2 for xi in x_values], color="red", marker='o', label="Gradient Descent Steps")
+plt.xlabel("x")
+plt.ylabel("f(x)")
+plt.title("Gradient Descent Path on f(x) = x^2")
+plt.legend()
+plt.grid()
+plt.show()
+
+Plots the curve f(x)=x^2across a range.
+Plots the points taken by gradient descent (x_values) as red dots.
+Shows visually how the algorithm moves toward the minimum.
+
+6. Plotting Cost vs. Iterations
+plt.figure(figsize = (8,6))
+plt.plot(range(len(costs)), costs, marker='o', color='red')
+plt.title("Cost vs Iterations")
+plt.ylabel("Cost")
+plt.xlabel("Iterations")
+plt.show()
+Plots how the cost (value of f(x)) decreases over iterations.
+Shows convergence toward the minimum.
+
+7. Returning the Minimum
+return x
+Returns the final x value found as the minimum.
+
+8. Running the Algorithm and Printing the Result
+x_min = gradient_descent(start_x = 10, learning_rate=0.1)
+print(f"Minimum found at x = {x_min}")
+Starts gradient descent from x=10 with a learning rate of 0.1.
+Prints the minimum found.
+
+Summary
+The code uses gradient descent to find the minimum of f(x)=x^2.
+It iteratively updates x by moving against the gradient.
+It visualizes both the path of the descent and the reduction of cost over time.
+The result is the xvalue where the function is minimized (ideally, x=0).
+
+
+
+Second code
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# Define the function to be minimized (a simple quadratic function)
+def f(x, y):
+    return x**2 + y**2
+
+# Define the partial derivatives of the function with respect to x and y
+def df_dx(x, y):
+    return 2 * x
+
+def df_dy(x, y):
+    return 2 * y
+
+# Define the gradient descent algorithm
+def gradient_descent(start_x, start_y, learning_rate, num_iterations):
+    # Initialize the parameters
+    x = start_x
+    y = start_y
+    history = [(x, y, f(x, y))]
+
+    # Perform the gradient descent iterations
+    for i in range(num_iterations):
+        # Calculate the gradients
+        grad_x = df_dx(x, y)
+        grad_y = df_dy(x, y)
+
+        # Update the parameters
+        x = x - learning_rate * grad_x
+        y = y - learning_rate * grad_y
+        # Save the history of the parameters
+        history.append((x, y, f(x, y)))
+
+    return x, y, f(x, y), history
+
+# Define the meshgrid for plotting the function
+x_range = np.arange(-10, 10, 0.1)
+y_range = np.arange(-10, 10, 0.1)
+X, Y = np.meshgrid(x_range, y_range)
+Z = f(X, Y)
+
+# Experiment with different initialization points and learning rates
+experiments = [
+    (8, 8, 0.1, 20),
+    (-6, 7, 0.05, 30),
+    (5, -5, 0.2, 15),
+    (-9, -9, 0.15, 25)
+]
+
+fig = plt.figure(figsize=(12, 6))
+# 3D Surface plot
+ax1 = fig.add_subplot(121, projection='3d')
+ax1.plot_surface(X, Y, Z, cmap='jet', edgecolor='none')
+ax1.set_xlabel('x')
+ax1.set_ylabel('y')
+ax1.set_zlabel('f(x, y)')
+ax1.set_title('Gradient Descent on 3D Surface')
+
+# Contour plot
+ax2 = fig.add_subplot(122)
+ax2.contour(X, Y, Z, levels=50, cmap='coolwarm')
+ax2.set_xlabel('x')
+ax2.set_ylabel('y')
+ax2.set_title('Gradient Descent Optimization Path')
+
+# Run experiments and plot paths
+for start_x, start_y, lr, num_iters in experiments:
+    _, _, _, history = gradient_descent(start_x, start_y, lr, num_iters)
+    x_hist, y_hist, _ = zip(*history)
+    ax1.scatter(x_hist, y_hist, [f(x, y) for x, y in zip(x_hist, y_hist)], marker='o', s=10)
+    ax2.plot(x_hist, y_hist, marker='o', markersize=3, label=f'Start: ({start_x}, {start_y}), lr={lr}')
+
+ax2.legend()
+plt.show()
+
+Explanation
+Here’s a step-by-step explanation for your `gradient_descent_plot.py` code:
+
+---
+
+## **1. Import Libraries**
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+```
+- **numpy**: Efficient numerical computations.
+- **matplotlib.pyplot**: Plotting graphs.
+- **mpl_toolkits.mplot3d.Axes3D**: Enables 3D plotting.
+
+---
+
+## **2. Define the Function to Minimize**
+```python
+def f(x, y):
+    return x**2 + y**2
+```
+- This is a simple quadratic function with a minimum at (0, 0).
+
+---
+
+## **3. Define Partial Derivatives**
+```python
+def df_dx(x, y):
+    return 2 * x
+
+def df_dy(x, y):
+    return 2 * y
+```
+- These are the gradients (partial derivatives) of `f` with respect to `x` and `y`.
+
+---
+
+## **4. Gradient Descent Algorithm**
+```python
+def gradient_descent(start_x, start_y, learning_rate, num_iterations):
+    x = start_x
+    y = start_y
+    history = [(x, y, f(x, y))]
+
+    for i in range(num_iterations):
+        grad_x = df_dx(x, y)
+        grad_y = df_dy(x, y)
+
+        x = x - learning_rate * grad_x
+        y = y - learning_rate * grad_y
+
+        history.append((x, y, f(x, y)))
+
+    return x, y, f(x, y), history
+```
+- Starts at `(start_x, start_y)`.
+- For each iteration:
+  1. Compute gradients for `x` and `y`.
+  2. Update `x` and `y` in the direction opposite to the gradient (move towards minimum).
+  3. Save the current position and cost to `history`.
+- Returns the final position and full history.
+
+---
+
+## **5. Set Up the Grid for Plotting**
+```python
+x_range = np.arange(-10, 10, 0.1)
+y_range = np.arange(-10, 10, 0.1)
+X, Y = np.meshgrid(x_range, y_range)
+Z = f(X, Y)
+```
+- Creates a grid of `x` and `y` values.
+- Computes `Z` to represent the function surface over the grid.
+
+---
+
+## **6. Define Experiments**
+```python
+experiments = [
+    (8, 8, 0.1, 20),
+    (-6, 7, 0.05, 30),
+    (5, -5, 0.2, 15),
+    (-9, -9, 0.15, 25)
+]
+```
+- Each tuple: `(start_x, start_y, learning_rate, num_iterations)`.
+- Used to show how different initial points and learning rates affect optimization.
+
+---
+
+## **7. Set Up Plots**
+```python
+fig = plt.figure(figsize=(12, 6))
+ax1 = fig.add_subplot(121, projection='3d')
+ax1.plot_surface(X, Y, Z, cmap='jet', edgecolor='none')
+ax1.set_xlabel('x')
+ax1.set_ylabel('y')
+ax1.set_zlabel('f(x, y)')
+ax1.set_title('Gradient Descent on 3D Surface')
+
+ax2 = fig.add_subplot(122)
+ax2.contour(X, Y, Z, levels=50, cmap='coolwarm')
+ax2.set_xlabel('x')
+ax2.set_ylabel('y')
+ax2.set_title('Gradient Descent Optimization Path')
+```
+- **ax1**: 3D surface plot of the function.
+- **ax2**: Contour plot (top-down view), helps visualize optimization paths.
+
+---
+
+## **8. Run Experiments & Plot Paths**
+```python
+for start_x, start_y, lr, num_iters in experiments:
+    _, _, _, history = gradient_descent(start_x, start_y, lr, num_iters)
+    x_hist, y_hist, _ = zip(*history)
+    ax1.scatter(x_hist, y_hist, [f(x, y) for x, y in zip(x_hist, y_hist)], marker='o', s=10)
+    ax2.plot(x_hist, y_hist, marker='o', markersize=3, label=f'Start: ({start_x}, {start_y}), lr={lr}')
+```
+- For each experiment:
+  - Run gradient descent.
+  - Extract the path (`x_hist`, `y_hist`) taken.
+  - Plot these points on both the 3D surface and contour plot.
+
+---
+
+## **9. Add Legend and Show Plot**
+```python
+ax2.legend()
+plt.show()
+```
+- Adds a legend to the contour plot for clarity.
+- Displays the final visualizations.
+
+---
+
+## **Summary**
+- The code demonstrates **gradient descent** in two dimensions for \( f(x, y) = x^2 + y^2 \).
+- It visualizes both the surface and the optimization paths for multiple starting points.
+- You see how each run converges toward the global minimum at (0, 0).
+
+Let me know if you want further details or want the explanation in markdown format!
+
+
+Third code
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Generate synthetic dataset
+np.random.seed(42)
+x = np.random.rand(100, 1) * 10  # Random values between 0 and 10
+y = 3 * x + 5 + np.random.randn(100, 1)  # y = 3x + 5 + noise
+
+# Add bias term
+X_b = np.c_[np.ones((100, 1)), x]  # Add x0 = 1 to each instance
+
+# Gradient Descent
+def gradient_descent(X, y, learning_rate=0.01, n_iterations=1000):
+    m, n = X.shape
+    theta = np.random.randn(n, 1)  # Random initialization
+
+    for iteration in range(n_iterations):
+        gradients = 2/m * X.T.dot(X.dot(theta) - y)
+        theta -= learning_rate * gradients
+
+    return theta
+
+# Stochastic Gradient Descent
+def stochastic_gradient_descent(X, y, learning_rate=0.01, n_epochs=50):
+    m, n = X.shape
+    theta = np.random.randn(n, 1)
+
+    for epoch in range(n_epochs):
+        for i in range(m):
+            random_index = np.random.randint(m)
+            xi = X[random_index:random_index+1]
+            yi = y[random_index:random_index+1]
+            gradients = 2 * xi.T.dot(xi.dot(theta) - yi)
+            theta -= learning_rate * gradients
+
+    return theta
+
+# Run GD and SGD
+theta_gd = gradient_descent(X_b, y)
+theta_sgd = stochastic_gradient_descent(X_b, y)
+
+# Plot results
+plt.scatter(x, y, label="Data", color="blue", alpha=0.5)
+plt.plot(x, X_b.dot(theta_gd), label="Gradient Descent", color="red")
+plt.plot(x, X_b.dot(theta_sgd), label="Stochastic Gradient Descent", color="green")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.legend()
+plt.title("Gradient Descent vs Stochastic Gradient Descent")
+plt.show()
+
+print("Theta (GD):", theta_gd.ravel())
+print("Theta (SGD):", theta_sgd.ravel())
+
+Here’s a step-by-step explanation for your `gradient_vs_sgd.py` code:
+
+---
+
+## **1. Import Libraries**
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+```
+- **numpy**: For numerical operations and random number generation.
+- **matplotlib.pyplot**: For plotting graphs.
+
+---
+
+## **2. Generate Synthetic Dataset**
+
+```python
+np.random.seed(42)
+x = np.random.rand(100, 1) * 10  # Random values between 0 and 10
+y = 3 * x + 5 + np.random.randn(100, 1)  # y = 3x + 5 + noise
+```
+- Generates 100 random `x` values (between 0 and 10).
+- Creates `y` values using the formula \(y = 3x + 5 +\) noise (models a linear relationship with random noise).
+- `np.random.seed(42)` ensures reproducibility of results.
+
+---
+
+## **3. Add Bias Term**
+
+```python
+X_b = np.c_[np.ones((100, 1)), x]  # Add x0 = 1 to each instance
+```
+- Adds a column of ones to `x` for the bias (intercept) term.
+- `X_b` shape: (100, 2), where column 0 is all ones, column 1 is your feature `x`.
+
+---
+
+## **4. Batch Gradient Descent Function**
+
+```python
+def gradient_descent(X, y, learning_rate=0.01, n_iterations=1000):
+    m, n = X.shape
+    theta = np.random.randn(n, 1)  # Random initialization
+
+    for iteration in range(n_iterations):
+        gradients = 2/m * X.T.dot(X.dot(theta) - y)
+        theta -= learning_rate * gradients
+
+    return theta
+```
+- **Initializes** parameters `theta` randomly.
+- **Iteratively updates** `theta` using all data points at once:
+    - Computes gradient for MSE loss function.
+    - Updates parameters by moving in the direction opposite to the gradient.
+- **Returns** the learned parameters.
+
+---
+
+## **5. Stochastic Gradient Descent Function**
+
+```python
+def stochastic_gradient_descent(X, y, learning_rate=0.01, n_epochs=50):
+    m, n = X.shape
+    theta = np.random.randn(n, 1)
+
+    for epoch in range(n_epochs):
+        for i in range(m):
+            random_index = np.random.randint(m)
+            xi = X[random_index:random_index+1]
+            yi = y[random_index:random_index+1]
+            gradients = 2 * xi.T.dot(xi.dot(theta) - yi)
+            theta -= learning_rate * gradients
+
+    return theta
+```
+- **Initializes** parameters `theta` randomly.
+- Runs for `n_epochs`, updating parameters for each sample in the dataset:
+    - For each sample, randomly selects a data point (`xi`, `yi`).
+    - Computes gradient only for that point.
+    - Updates `theta` immediately (making SGD faster and more noisy).
+- **Returns** the learned parameters.
+
+---
+
+## **6. Run Both Algorithms**
+
+```python
+theta_gd = gradient_descent(X_b, y)
+theta_sgd = stochastic_gradient_descent(X_b, y)
+```
+- Runs Batch Gradient Descent and Stochastic Gradient Descent on the dataset.
+
+---
+
+## **7. Plot Results**
+
+```python
+plt.scatter(x, y, label="Data", color="blue", alpha=0.5)
+plt.plot(x, X_b.dot(theta_gd), label="Gradient Descent", color="red")
+plt.plot(x, X_b.dot(theta_sgd), label="Stochastic Gradient Descent", color="green")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.legend()
+plt.title("Gradient Descent vs Stochastic Gradient Descent")
+plt.show()
+```
+- Plots original data points as blue dots.
+- Plots prediction lines from both GD (red) and SGD (green) to compare their fits.
+
+---
+
+## **8. Print Learned Parameters**
+
+```python
+print("Theta (GD):", theta_gd.ravel())
+print("Theta (SGD):", theta_sgd.ravel())
+```
+- Prints the learned parameters (`theta`) for each method.
+
+---
+
+### **Summary**
+- The code compares **batch gradient descent** and **stochastic gradient descent** for linear regression.
+- You see both learned lines on the plot, plus the fitted parameters printed.
+- **GD**: Uses all data points per update, typically more stable.
+- **SGD**: Updates parameters one sample at a time, typically faster but noisier.
+
+Let me know if you want further breakdowns or code comments!
+
+
+Fourth code
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+def f(x, y):
+    return (x**2 + y**2) * np.sin(x) * np.sin(y) + x**2 + y**2
+
+def gradient(x, y):
+    df_dx = (2*x * np.sin(x) * np.sin(y)) + ((x**2 + y**2) * np.cos(x) * np.sin(y)) + 2*x
+    df_dy = (2*y * np.sin(x) * np.sin(y)) + ((x**2 + y**2) * np.sin(x) * np.cos(y)) + 2*y
+    return np.array([df_dx, df_dy])
+
+x_vals = np.linspace(-5, 5, 100)
+y_vals = np.linspace(-5, 5, 100)
+X, Y = np.meshgrid(x_vals, y_vals)
+Z = f(X, Y)
+
+# 3D Surface Plot
+fig = plt.figure(figsize=(12, 5))
+ax1 = fig.add_subplot(121, projection='3d')
+ax1.plot_surface(X, Y, Z, cmap='viridis',edgecolor='none')
+ax1.set_xlabel("X")
+ax1.set_ylabel("Y")
+ax1.set_zlabel("f(X, Y)")
+ax1.set_title("3D Surface Plot")
+
+# Contour Plot
+ax2 = fig.add_subplot(122)
+contour = ax2.contour(X, Y, Z, 20, cmap='viridis')
+ax2.set_xlabel("X")
+ax2.set_ylabel("Y")
+ax2.set_title("Contour Plot")
+plt.colorbar(contour, ax=ax2)
+plt.show()
+
+# Gradient Descent Implementation
+def gradient_descent(start, learning_rate=0.01, n_iterations=100):
+    x, y = start
+    path = [(x, y)]
+
+    for _ in range(n_iterations):
+        grad = gradient(x, y)
+        x -= learning_rate * grad[0]
+        y -= learning_rate * grad[1]
+        path.append((x, y))
+
+    return np.array(path)
+
+# Stochastic Gradient Descent Implementation
+def stochastic_gradient_descent(start, learning_rate=0.01, n_iterations=100):
+    x, y = start
+    path = [(x, y)]
+
+    for _ in range(n_iterations):
+        grad = gradient(x, y)
+        index = np.random.randint(2)  # Choose a random direction
+        if index == 0:
+            x -= learning_rate * grad[0]
+        else:
+            y -= learning_rate * grad[1]
+        path.append((x, y))
+
+    return np.array(path)
+
+# Test different initial points and learning rates
+initial_points = [(-4, 4), (3, -3), (-2, 2)]
+learning_rate = 0.05
+
+fig, ax = plt.subplots(figsize=(8, 6))
+contour = ax.contour(X, Y, Z, 20, cmap='viridis')
+plt.colorbar(contour, ax=ax)
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_title("Gradient Descent vs Stochastic Gradient Descent Path")
+
+colors = ['r', 'b', 'g']
+for i, (x0, y0) in enumerate(initial_points):
+    gd_path = gradient_descent((x0, y0), learning_rate)
+    sgd_path = stochastic_gradient_descent((x0, y0), learning_rate)
+
+    ax.plot(gd_path[:, 0], gd_path[:, 1], color=colors[i], label=f'GD Start ({x0},{y0})')
+    ax.plot(sgd_path[:, 0], sgd_path[:, 1], '--', color=colors[i], label=f'SGD Start ({x0},{y0})')
+    ax.scatter(x0, y0, color=colors[i], marker='o')
+
+ax.legend()
+plt.show()
+
+Here’s a step-by-step explanation for your code, which visualizes and compares **gradient descent (GD)** and **stochastic gradient descent (SGD)** on a complex two-dimensional function:
+
+---
+
+## **1. Import Libraries**
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+```
+- **numpy**: Numerical operations.
+- **matplotlib.pyplot**: For plotting.
+- **mpl_toolkits.mplot3d.Axes3D**: For 3D surface plots.
+
+---
+
+## **2. Define the Function and Gradient**
+```python
+def f(x, y):
+    return (x**2 + y**2) * np.sin(x) * np.sin(y) + x**2 + y**2
+
+def gradient(x, y):
+    df_dx = (2*x * np.sin(x) * np.sin(y)) + ((x**2 + y**2) * np.cos(x) * np.sin(y)) + 2*x
+    df_dy = (2*y * np.sin(x) * np.sin(y)) + ((x**2 + y**2) * np.sin(x) * np.cos(y)) + 2*y
+    return np.array([df_dx, df_dy])
+```
+- `f(x, y)`: A non-convex function (complex surface).
+- `gradient(x, y)`: Returns the partial derivatives (the gradient vector).
+
+---
+
+## **3. Prepare Grid for Visualization**
+```python
+x_vals = np.linspace(-5, 5, 100)
+y_vals = np.linspace(-5, 5, 100)
+X, Y = np.meshgrid(x_vals, y_vals)
+Z = f(X, Y)
+```
+- Creates a grid of `x` and `y` values.
+- Computes `Z = f(X, Y)` for plotting the surface.
+
+---
+
+## **4. Plot the Function Surface and Contours**
+```python
+fig = plt.figure(figsize=(12, 5))
+ax1 = fig.add_subplot(121, projection='3d')
+ax1.plot_surface(X, Y, Z, cmap='viridis',edgecolor='none')
+ax1.set_xlabel("X")
+ax1.set_ylabel("Y")
+ax1.set_zlabel("f(X, Y)")
+ax1.set_title("3D Surface Plot")
+
+ax2 = fig.add_subplot(122)
+contour = ax2.contour(X, Y, Z, 20, cmap='viridis')
+ax2.set_xlabel("X")
+ax2.set_ylabel("Y")
+ax2.set_title("Contour Plot")
+plt.colorbar(contour, ax=ax2)
+plt.show()
+```
+- **3D Surface Plot**: Gives an overall view of the function’s landscape.
+- **Contour Plot**: Shows level curves of `f(x, y)` for easier visualization of paths.
+
+---
+
+## **5. Gradient Descent Implementation**
+```python
+def gradient_descent(start, learning_rate=0.01, n_iterations=100):
+    x, y = start
+    path = [(x, y)]
+
+    for _ in range(n_iterations):
+        grad = gradient(x, y)
+        x -= learning_rate * grad[0]
+        y -= learning_rate * grad[1]
+        path.append((x, y))
+
+    return np.array(path)
+```
+- Starts from `start` point.
+- At each iteration:
+    - Computes gradient.
+    - Updates both `x` and `y` using the learning rate and gradient.
+    - Stores the path for visualization.
+
+---
+
+## **6. Stochastic Gradient Descent Implementation**
+```python
+def stochastic_gradient_descent(start, learning_rate=0.01, n_iterations=100):
+    x, y = start
+    path = [(x, y)]
+
+    for _ in range(n_iterations):
+        grad = gradient(x, y)
+        index = np.random.randint(2)  # Choose a random direction
+        if index == 0:
+            x -= learning_rate * grad[0]
+        else:
+            y -= learning_rate * grad[1]
+        path.append((x, y))
+
+    return np.array(path)
+```
+- At each iteration:
+    - Computes gradient.
+    - Randomly chooses to update either `x` or `y` (not both).
+    - Simulates the noisy, less predictable path of SGD.
+
+---
+
+## **7. Test Different Starting Points and Visualize Paths**
+```python
+initial_points = [(-4, 4), (3, -3), (-2, 2)]
+learning_rate = 0.05
+
+fig, ax = plt.subplots(figsize=(8, 6))
+contour = ax.contour(X, Y, Z, 20, cmap='viridis')
+plt.colorbar(contour, ax=ax)
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_title("Gradient Descent vs Stochastic Gradient Descent Path")
+
+colors = ['r', 'b', 'g']
+for i, (x0, y0) in enumerate(initial_points):
+    gd_path = gradient_descent((x0, y0), learning_rate)
+    sgd_path = stochastic_gradient_descent((x0, y0), learning_rate)
+
+    ax.plot(gd_path[:, 0], gd_path[:, 1], color=colors[i], label=f'GD Start ({x0},{y0})')
+    ax.plot(sgd_path[:, 0], sgd_path[:, 1], '--', color=colors[i], label=f'SGD Start ({x0},{y0})')
+    ax.scatter(x0, y0, color=colors[i], marker='o')
+
+ax.legend()
+plt.show()
+```
+- For each initial point:
+    - Runs both GD and SGD.
+    - Plots the path taken by each optimizer on the contour plot.
+    - Shows how both methods move through the landscape, starting from different points.
+
+---
+
+## **Summary**
+- This code visualizes a complex function and compares **GD** and **SGD** as they try to find a minimum.
+- **GD**: Updates both `x` and `y` at every step, usually follows a smoother, more direct path.
+- **SGD**: Updates only one variable at random per step, resulting in a more jagged, unpredictable path.
+- The plots help you see how each optimizer navigates the function’s complex surface from different starting points.
+
+Let me know if you want more details about the math, the code, or the visualizations!
+
+
+Fifth code
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression, SGDRegressor
+from sklearn.metrics import mean_squared_error, r2_score
+
+cars = pd.read_csv("cars.csv")
+cars = cars[['year', 'selling_price', 'km_driven', 'fuel', 'seller_type', 'transmission', 'owner', 'mileage', 'engine', 'max_power', 'seats']].dropna()
+cars = pd.get_dummies(cars, columns=['fuel', 'seller_type', 'transmission', 'owner'], drop_first=True)
+
+X = cars.drop(columns=['selling_price'])
+y = cars['selling_price']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+ols_model = LinearRegression()
+ols_model.fit(X_train, y_train)
+ols_pred = ols_model.predict(X_test)
+
+# Fit Linear Regression using Gradient Descent (SGDRegressor)
+sgd_model = SGDRegressor(max_iter=100000, learning_rate='optimal', eta0=0.01, random_state=42)
+sgd_model.fit(X_train_scaled, y_train)
+sgd_pred = sgd_model.predict(X_test_scaled)
+
+# Evaluate models
+ols_mse = mean_squared_error(y_test, ols_pred)
+ols_r2 = r2_score(y_test, ols_pred)
+sgd_mse = mean_squared_error(y_test, sgd_pred)
+sgd_r2 = r2_score(y_test, sgd_pred)
+
+# Print comparison
+print("OLS Regression Results:")
+print(f"MSE: {ols_mse:.4f}, R2: {ols_r2:.4f}")
+print(f"Coefficients: {ols_model.coef_}, Intercept: {ols_model.intercept_}")
+
+print("\nSGD Regression Results:")
+print(f"MSE: {sgd_mse:.4f}, R2: {sgd_r2:.4f}")
+print(f"Coefficients: {sgd_model.coef_}, Intercept: {sgd_model.intercept_}")
+
+# Plot results
+plt.figure(figsize=(8, 6))
+plt.scatter(y_test, ols_pred, color='yellow', alpha=0.5, label='OLS Predictions')
+plt.scatter(y_test, sgd_pred, color='pink', label='SGD Predictions')
+plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], color='blue', linestyle='dashed', label='Ideal Fit')
+plt.xlabel('Actual Selling Price')
+plt.ylabel('Predicted Selling Price')
+plt.legend()
+plt.title('Comparison of OLS vs. SGD Regression')
+plt.show()
+
+Here’s a step-by-step explanation of your code, which compares **Ordinary Least Squares (OLS)** regression with **Stochastic Gradient Descent (SGD)** regression for car price prediction:
+
+---
+
+## **1. Import Libraries**
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression, SGDRegressor
+from sklearn.metrics import mean_squared_error, r2_score
+```
+- **numpy, pandas**: Data manipulation.
+- **matplotlib.pyplot**: Plotting.
+- **scikit-learn**: Machine learning models, metrics, and preprocessing.
+
+---
+
+## **2. Load and Prepare Data**
+```python
+cars = pd.read_csv("cars.csv")
+cars = cars[['year', 'selling_price', 'km_driven', 'fuel', 'seller_type', 'transmission', 'owner', 'mileage', 'engine', 'max_power', 'seats']].dropna()
+cars = pd.get_dummies(cars, columns=['fuel', 'seller_type', 'transmission', 'owner'], drop_first=True)
+```
+- Loads car data from CSV.
+- Selects relevant columns and removes rows with missing values.
+- Converts categorical variables into dummy/indicator variables (one-hot encoding).
+
+---
+
+## **3. Feature Selection**
+```python
+X = cars.drop(columns=['selling_price'])
+y = cars['selling_price']
+```
+- `X`: Features used for prediction.
+- `y`: Target variable (car selling price).
+
+---
+
+## **4. Split Data into Training and Test Sets**
+```python
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+```
+- Splits data into training (80%) and testing (20%) sets.
+
+---
+
+## **5. Feature Scaling**
+```python
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+```
+- Standardizes features for SGD (mean 0, std 1), which helps SGD converge faster.
+
+---
+
+## **6. Train Ordinary Least Squares (OLS) Regression**
+```python
+ols_model = LinearRegression()
+ols_model.fit(X_train, y_train)
+ols_pred = ols_model.predict(X_test)
+```
+- Fits OLS regression to training data.
+- Predicts car prices on test data.
+
+---
+
+## **7. Train SGD Regression Model**
+```python
+sgd_model = SGDRegressor(max_iter=100000, learning_rate='optimal', eta0=0.01, random_state=42)
+sgd_model.fit(X_train_scaled, y_train)
+sgd_pred = sgd_model.predict(X_test_scaled)
+```
+- Trains an SGD regressor on scaled features.
+- Predicts car prices on scaled test data.
+
+---
+
+## **8. Evaluate Models**
+```python
+ols_mse = mean_squared_error(y_test, ols_pred)
+ols_r2 = r2_score(y_test, ols_pred)
+sgd_mse = mean_squared_error(y_test, sgd_pred)
+sgd_r2 = r2_score(y_test, sgd_pred)
+```
+- **MSE**: Mean Squared Error (lower is better).
+- **R2**: Coefficient of determination (closer to 1 is better).
+
+---
+
+## **9. Print Comparison**
+```python
+print("OLS Regression Results:")
+print(f"MSE: {ols_mse:.4f}, R2: {ols_r2:.4f}")
+print(f"Coefficients: {ols_model.coef_}, Intercept: {ols_model.intercept_}")
+
+print("\nSGD Regression Results:")
+print(f"MSE: {sgd_mse:.4f}, R2: {sgd_r2:.4f}")
+print(f"Coefficients: {sgd_model.coef_}, Intercept: {sgd_model.intercept_}")
+```
+- Shows metrics and learned parameters for both models.
+
+---
+
+## **10. Plot Results**
+```python
+plt.figure(figsize=(8, 6))
+plt.scatter(y_test, ols_pred, color='yellow', alpha=0.5, label='OLS Predictions')
+plt.scatter(y_test, sgd_pred, color='pink', label='SGD Predictions')
+plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], color='blue', linestyle='dashed', label='Ideal Fit')
+plt.xlabel('Actual Selling Price')
+plt.ylabel('Predicted Selling Price')
+plt.legend()
+plt.title('Comparison of OLS vs. SGD Regression')
+plt.show()
+```
+- Scatter plots show **actual vs. predicted** prices for both models.
+- The dashed blue line represents ideal predictions (perfect fit).
+- You can visually assess model performance.
+
+---
+
+## **Summary**
+- **OLS Regression** computes the best-fit solution in one step (directly solves for coefficients).
+- **SGD Regression** uses iterative optimization (gradient descent) and works better with large datasets and online learning.
+- You compared both approaches on the same data, printed their metrics, and plotted results for visual inspection.
+
+Let me know if you want a Markdown version, code comments, or have questions on any part! 

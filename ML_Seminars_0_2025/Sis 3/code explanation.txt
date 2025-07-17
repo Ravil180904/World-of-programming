@@ -1,0 +1,1440 @@
+First code:
+# 1. Generate synthetic data
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+np.random.seed(42)
+n = 50
+# Generate random points in unit square
+X = np.random.rand(n, 2)
+# Define a boundary: x > y -> orange, else blue
+labels = np.where(X[:, 0] > X[:, 1], 'orange', 'blue')
+df = pd.DataFrame(X, columns=['x', 'y'])
+df['label'] = labels
+
+plt.figure(figsize=(6, 6))
+sns.scatterplot(data=df, x='x', y='y', hue='label', palette={'orange':'orange', 'blue':'blue'}, s=100)
+plt.title('Synthetic KNN Dataset')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.show()
+
+Here’s a step-by-step explanation of your code:
+
+---
+
+### 1. **Import the Required Libraries**
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+- **numpy (np)**: Used for numerical operations, especially here for generating random numbers.
+- **pandas (pd)**: For creating and handling a DataFrame (table).
+- **matplotlib.pyplot (plt)**: For plotting data.
+- **seaborn (sns)**: For making attractive data visualizations, built on top of matplotlib.
+
+---
+
+### 2. **Set Random Seed for Reproducibility**
+
+```python
+np.random.seed(42)
+```
+- Sets the seed for NumPy’s random number generator so your results are the same every time you run the code.
+
+---
+
+### 3. **Generate Random Data Points**
+
+```python
+n = 50
+X = np.random.rand(n, 2)
+```
+- **n = 50**: Sets the number of data points you want to generate.
+- **X = np.random.rand(n, 2)**: Generates a 50x2 array of random numbers between 0 and 1.
+  - Each row represents a point (x, y) within the unit square (all points lie between (0,0) and (1,1)).
+
+---
+
+### 4. **Assign Labels Based on a Boundary**
+
+```python
+labels = np.where(X[:, 0] > X[:, 1], 'orange', 'blue')
+```
+- **X[:, 0]**: Selects all x-values (1st column).
+- **X[:, 1]**: Selects all y-values (2nd column).
+- **np.where(condition, value_if_true, value_if_false)**: Checks if x > y for each point.
+  - If true, label as `'orange'`.
+  - If false, label as `'blue'`.
+
+---
+
+### 5. **Create a DataFrame**
+
+```python
+df = pd.DataFrame(X, columns=['x', 'y'])
+df['label'] = labels
+```
+- **pd.DataFrame(X, columns=['x', 'y'])**: Creates a table with columns "x" and "y".
+- **df['label'] = labels**: Adds a new column "label" to the DataFrame with the class label for each point.
+
+---
+
+### 6. **Plot the Data**
+
+```python
+plt.figure(figsize=(6, 6))
+sns.scatterplot(data=df, x='x', y='y', hue='label', palette={'orange':'orange', 'blue':'blue'}, s=100)
+plt.title('Synthetic KNN Dataset')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.show()
+```
+- **plt.figure(figsize=(6, 6))**: Sets the figure size to 6x6 inches.
+- **sns.scatterplot(...)**: Creates a scatter plot:
+  - **data=df**: Uses the DataFrame you created.
+  - **x='x', y='y'**: Plots "x" vs. "y".
+  - **hue='label'**: Colors the points based on their label ("orange" or "blue").
+  - **palette=...**: Specifies the colors for each label.
+  - **s=100**: Sets the size of each point.
+- **plt.title**: Adds a plot title.
+- **plt.xlabel / plt.ylabel**: Label the axes.
+- **plt.show()**: Displays the plot.
+
+---
+
+## **Summary**
+
+- You generate 50 random points in a unit square.
+- Each point is labeled "orange" if x > y, otherwise "blue".
+- You store the data in a DataFrame.
+- You plot the points, coloring them by label, to visualize the data and the boundary.
+
+**This is useful for illustrating classification boundaries, e.g., for KNN algorithms.**
+
+Second code:
+# 2. Implement KNN algorithm for a new point
+from collections import Counter
+
+def euclidean_distance(p1, p2):
+    return np.sqrt(np.sum((p1 - p2) ** 2))
+
+def manhattan_distance(p1, p2):
+    return np.sum(np.abs(p1 - p2))
+
+def knn_predict(X, y, x0, K=3, metric='euclidean'):
+    if metric == 'euclidean':
+        dists = np.linalg.norm(X - x0, axis=1)
+    elif metric == 'manhattan':
+        dists = np.sum(np.abs(X - x0), axis=1)
+    else:
+        raise ValueError('Unknown metric')
+    idx = np.argsort(dists)[:K]
+    neighbor_labels = y[idx]
+    pred = Counter(neighbor_labels).most_common(1)[0][0]
+    return pred, neighbor_labels, dists[idx]
+
+Here’s a step-by-step explanation of your KNN code:
+
+---
+
+### 1. **Import Required Module**
+
+```python
+from collections import Counter
+```
+- **Counter**: A helpful class from Python’s `collections` module used to count the number of occurrences of elements (here, labels among neighbors).
+
+---
+
+### 2. **Define Distance Functions**
+
+#### **Euclidean Distance**
+
+```python
+def euclidean_distance(p1, p2):
+    return np.sqrt(np.sum((p1 - p2) ** 2))
+```
+- **Purpose:** Computes the straight-line ("as the crow flies") distance between two points, `p1` and `p2`.
+- **np.sum((p1 - p2) ** 2)**: Calculates the sum of squared differences between each coordinate.
+- **np.sqrt(...)**: Takes the square root of the sum to get Euclidean distance.
+
+#### **Manhattan Distance**
+
+```python
+def manhattan_distance(p1, p2):
+    return np.sum(np.abs(p1 - p2))
+```
+- **Purpose:** Computes the "city block" distance (sum of the absolute differences between coordinates) between `p1` and `p2`.
+
+---
+
+### 3. **KNN Prediction Function**
+
+```python
+def knn_predict(X, y, x0, K=3, metric='euclidean'):
+```
+- **X**: Array of data points (shape: n_samples x n_features).
+- **y**: Array of labels for the data points.
+- **x0**: The new point you want to classify.
+- **K**: Number of nearest neighbors to use (default: 3).
+- **metric**: Which distance metric to use (`'euclidean'` or `'manhattan'`).
+
+#### **Calculate Distances**
+
+```python
+if metric == 'euclidean':
+    dists = np.linalg.norm(X - x0, axis=1)
+elif metric == 'manhattan':
+    dists = np.sum(np.abs(X - x0), axis=1)
+else:
+    raise ValueError('Unknown metric')
+```
+- **If 'euclidean'**: Uses NumPy’s `linalg.norm` to calculate the Euclidean distance from `x0` to each point in `X`.
+- **If 'manhattan'**: Calculates the sum of absolute differences from `x0` to each point in `X`.
+- **Else**: Raises an error if the metric is not supported.
+
+#### **Find K Nearest Neighbors**
+
+```python
+idx = np.argsort(dists)[:K]
+```
+- **np.argsort(dists)**: Returns indices that would sort the array `dists` in ascending order (smallest distance first).
+- **[:K]**: Selects the indices of the K closest points.
+
+#### **Get Neighbor Labels**
+
+```python
+neighbor_labels = y[idx]
+```
+- **neighbor_labels**: Retrieves the labels of the K nearest neighbors.
+
+#### **Predict the Class**
+
+```python
+pred = Counter(neighbor_labels).most_common(1)[0][0]
+```
+- **Counter(neighbor_labels)**: Counts occurrences of each label among the K neighbors.
+- **most_common(1)[0][0]**: Finds the label with the highest count (i.e., the majority class among neighbors).
+
+#### **Return the Result**
+
+```python
+return pred, neighbor_labels, dists[idx]
+```
+- **pred**: The predicted label for `x0`.
+- **neighbor_labels**: The labels of the K nearest neighbors.
+- **dists[idx]**: The distances of the K nearest neighbors (can be useful for debugging or analysis).
+
+---
+
+## **Summary**
+
+1. **Calculates the distance** from the new point to every point in the dataset, using the chosen metric.
+2. **Finds the K closest points** and their labels.
+3. **Predicts the label** for the new point by majority voting among the neighbors.
+4. **Returns** the predicted label, the labels of the neighbors, and their distances.
+
+This is a classic implementation of the K-Nearest Neighbors (KNN) algorithm, supporting both Euclidean and Manhattan distances.
+
+Third code:
+np.random.seed(1)
+x0 = np.random.rand(2)
+
+K_list = [1, 3, 10, 25, 49]
+results = {}
+plt.figure(figsize=(15, 3))
+for i, K in enumerate(K_list):
+    pred, neighbors, neighbor_dists = knn_predict(X, labels, x0, K=K)
+    results[K] = pred
+    ax = plt.subplot(1, len(K_list), i+1)
+    sns.scatterplot(data=df, x='x', y='y', hue='label', palette={'orange':'orange', 'blue':'blue'}, s=60, ax=ax)
+    ax.scatter(x0[0], x0[1], color='k', marker='X', s=120, label='Test point')
+    # Highlight neighbors
+    idx = np.argsort(np.linalg.norm(X - x0, axis=1))[:K]
+    ax.scatter(X[idx,0], X[idx,1], facecolors='none', edgecolors='r', s=130, linewidths=2, label='Neighbors')
+    ax.set_title(f'K={K}\nPrediction: {pred}')
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.legend()
+plt.tight_layout()
+plt.show()
+
+Here’s a step-by-step explanation of your code:
+
+---
+
+### 1. **Generate a New Random Test Point**
+
+```python
+np.random.seed(1)
+x0 = np.random.rand(2)
+```
+- **np.random.seed(1)**: Sets the random seed for reproducibility.
+- **x0 = np.random.rand(2)**: Generates a random 2D point (within [0,1] x [0,1]) to serve as the new "test" point we want to classify.
+
+---
+
+### 2. **Set Up the Values of K to Compare**
+
+```python
+K_list = [1, 3, 10, 25, 49]
+results = {}
+```
+- **K_list**: A list of different K values to try (number of neighbors for KNN).
+- **results**: An empty dictionary to store predictions for each K.
+
+---
+
+### 3. **Set Up Figure for Multiple Subplots**
+
+```python
+plt.figure(figsize=(15, 3))
+```
+- Creates a wide, horizontal figure to hold all your KNN visualizations side-by-side.
+
+---
+
+### 4. **Loop Over Each K and Visualize**
+
+```python
+for i, K in enumerate(K_list):
+    pred, neighbors, neighbor_dists = knn_predict(X, labels, x0, K=K)
+    results[K] = pred
+    ax = plt.subplot(1, len(K_list), i+1)
+    sns.scatterplot(data=df, x='x', y='y', hue='label', palette={'orange':'orange', 'blue':'blue'}, s=60, ax=ax)
+    ax.scatter(x0[0], x0[1], color='k', marker='X', s=120, label='Test point')
+    # Highlight neighbors
+    idx = np.argsort(np.linalg.norm(X - x0, axis=1))[:K]
+    ax.scatter(X[idx,0], X[idx,1], facecolors='none', edgecolors='r', s=130, linewidths=2, label='Neighbors')
+    ax.set_title(f'K={K}\nPrediction: {pred}')
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.legend()
+```
+For each K in **K_list**:
+- **knn_predict(X, labels, x0, K=K)**: Predicts the label of `x0` using KNN with the current K, and gets the neighbor labels and their distances.
+- **results[K] = pred**: Stores the prediction for this K.
+- **ax = plt.subplot(1, len(K_list), i+1)**: Adds a subplot for the current K.
+- **sns.scatterplot(...)**: Plots the synthetic dataset, coloring by label.
+- **ax.scatter(x0[0], x0[1], ...)**: Plots the test point as a large black 'X'.
+- **Highlight neighbors**:
+    - **idx = np.argsort(np.linalg.norm(X - x0, axis=1))[:K]**: Finds the indices of the K closest points to `x0` (using Euclidean distance).
+    - **ax.scatter(X[idx,0], X[idx,1], ...)**: Circles the K neighbors with red edges and no face color.
+- **ax.set_title(...)**: Shows the value of K and the prediction.
+- **ax.set_xlim(0, 1), ax.set_ylim(0, 1)**: Ensures the plot axes cover the unit square.
+- **ax.legend()**: Adds a legend.
+
+---
+
+### 5. **Finalize and Show the Figure**
+
+```python
+plt.tight_layout()
+plt.show()
+```
+- **plt.tight_layout()**: Adjusts subplot spacing for a neat fit.
+- **plt.show()**: Displays the entire multi-panel plot.
+
+---
+
+## **What Does This Code Do?**
+
+- **Compares how the KNN classification of a single test point (`x0`) changes as K varies.**
+- For each K, you see:
+    - The whole dataset (colored by label).
+    - The test point.
+    - The K nearest neighbors (circled).
+    - The predicted label for the test point.
+- **This visualization helps you understand the influence of K in KNN classification and how the set of neighbors changes.**
+
+Fourth code:
+# Generate a more complex dataset: two moons
+from sklearn.datasets import make_moons
+Xm, ym = make_moons(n_samples=200, noise=0.15, random_state=42)
+ym_labels = np.where(ym==0, 'blue', 'orange')
+
+plt.figure(figsize=(6,6))
+sns.scatterplot(x=Xm[:,0], y=Xm[:,1], hue=ym_labels, palette={'orange':'orange', 'blue':'blue'}, s=60)
+plt.title('Complex (moons) dataset for KNN')
+plt.show()
+
+Here’s a step-by-step explanation of your "two moons" dataset code:
+
+---
+
+### 1. **Import and Generate the Dataset**
+
+```python
+from sklearn.datasets import make_moons
+Xm, ym = make_moons(n_samples=200, noise=0.15, random_state=42)
+```
+- **make_moons**: A function from scikit-learn that generates a synthetic two-dimensional dataset in the shape of two interleaving half circles (moons), often used for testing classification algorithms.
+- **n_samples=200**: Generates 200 points.
+- **noise=0.15**: Adds a moderate amount of noise (random jitter) to make the classification task less trivial.
+- **random_state=42**: Ensures reproducibility.
+
+- **Xm**: Array of shape (200, 2), containing the coordinates of the data points.
+- **ym**: Array of shape (200,), with class labels (0 or 1) for each data point.
+
+---
+
+### 2. **Convert Numeric Labels to Strings for Visualization**
+
+```python
+ym_labels = np.where(ym==0, 'blue', 'orange')
+```
+- Translates the numeric labels to color names for easier plotting:
+  - If the label is 0 → 'blue'
+  - If the label is 1 → 'orange'
+
+---
+
+### 3. **Plot the Data**
+
+```python
+plt.figure(figsize=(6,6))
+sns.scatterplot(x=Xm[:,0], y=Xm[:,1], hue=ym_labels, palette={'orange':'orange', 'blue':'blue'}, s=60)
+plt.title('Complex (moons) dataset for KNN')
+plt.show()
+```
+- **plt.figure(figsize=(6,6))**: Sets the plot size.
+- **sns.scatterplot(...)**: Plots the moons:
+  - **x=Xm[:,0], y=Xm[:,1]**: Uses the two features as x and y axes.
+  - **hue=ym_labels**: Colors points by their class label ('blue' or 'orange').
+  - **palette**: Explicitly assigns colors to labels.
+  - **s=60**: Sets the marker size.
+- **plt.title(...)**: Adds a title.
+- **plt.show()**: Displays the plot.
+
+---
+
+### **Summary**
+
+- You create a more challenging (non-linearly separable) dataset called "two moons".
+- Points are colored by class.
+- This dataset is commonly used to illustrate the strengths of non-linear classifiers like KNN, as a simple linear classifier cannot easily separate the two classes.
+
+Fifth code:
+# Evaluate KNN prediction on a grid
+def plot_knn_decision_boundary(X, y, K=5, metric='euclidean', title=None):
+    x_min, x_max = X[:,0].min() - 0.5, X[:,0].max() + 0.5
+    y_min, y_max = X[:,1].min() - 0.5, X[:,1].max() + 0.5
+    xx, yy = np.meshgrid(np.linspace(x_min, x_max, 200), np.linspace(y_min, y_max, 200))
+    grid = np.c_[xx.ravel(), yy.ravel()]
+    preds = []
+    for point in grid:
+        pred,_,_ = knn_predict(X, y, point, K=K, metric=metric)
+        preds.append(pred)
+    Z = np.array(preds).reshape(xx.shape)
+    palette = {'orange':'orange', 'blue':'blue'}
+    plt.figure(figsize=(6,6))
+    plt.contourf(xx, yy, Z=='orange', alpha=0.3, levels=1, colors=['blue', 'orange'])
+    sns.scatterplot(x=X[:,0], y=X[:,1], hue=y, palette=palette, s=50, edgecolor='k')
+    plt.title(title or f'KNN Decision Boundary (K={K}, metric={metric})')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.show()
+
+plot_knn_decision_boundary(Xm, ym_labels, K=1, title='Very local K=1')
+plot_knn_decision_boundary(Xm, ym_labels, K=15, title='Smoothed K=15')
+
+Here’s a step-by-step explanation of your code for evaluating and visualizing the KNN decision boundary:
+
+---
+
+## 1. **Define the Function to Plot KNN Decision Boundary**
+
+```python
+def plot_knn_decision_boundary(X, y, K=5, metric='euclidean', title=None):
+```
+- **X**: 2D array of points (features).
+- **y**: Class labels (must be color names here, like 'orange' and 'blue').
+- **K**: Number of neighbors for KNN.
+- **metric**: Distance metric ('euclidean' or 'manhattan').
+- **title**: Optional plot title.
+
+---
+
+## 2. **Create a Grid for Evaluation**
+
+```python
+x_min, x_max = X[:,0].min() - 0.5, X[:,0].max() + 0.5
+y_min, y_max = X[:,1].min() - 0.5, X[:,1].max() + 0.5
+xx, yy = np.meshgrid(np.linspace(x_min, x_max, 200), np.linspace(y_min, y_max, 200))
+grid = np.c_[xx.ravel(), yy.ravel()]
+```
+- Finds the min/max for x and y, and expands the range for better visualization.
+- **np.meshgrid**: Creates a grid of points covering the whole plot area.
+- **np.c_[]**: Flattens the grid into a list of 2D coordinates for classification.
+
+---
+
+## 3. **Predict KNN Class for Each Grid Point**
+
+```python
+preds = []
+for point in grid:
+    pred, _, _ = knn_predict(X, y, point, K=K, metric=metric)
+    preds.append(pred)
+Z = np.array(preds).reshape(xx.shape)
+```
+- For every point in the grid, predict its label using your `knn_predict` function.
+- Store each prediction in `preds`, then reshape to the grid’s shape for plotting.
+
+---
+
+## 4. **Plot Decision Boundary and Data Points**
+
+```python
+palette = {'orange':'orange', 'blue':'blue'}
+plt.figure(figsize=(6,6))
+plt.contourf(xx, yy, Z=='orange', alpha=0.3, levels=1, colors=['blue', 'orange'])
+sns.scatterplot(x=X[:,0], y=X[:,1], hue=y, palette=palette, s=50, edgecolor='k')
+plt.title(title or f'KNN Decision Boundary (K={K}, metric={metric})')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.show()
+```
+- **plt.contourf**: Plots filled regions for the decision boundary (orange region for 'orange', blue for 'blue').
+- **sns.scatterplot**: Plots the actual data points on top, colored by their class.
+- Sets title, axis labels, and then displays the plot.
+
+---
+
+## 5. **Call the Function with Different K Values**
+
+```python
+plot_knn_decision_boundary(Xm, ym_labels, K=1, title='Very local K=1')
+plot_knn_decision_boundary(Xm, ym_labels, K=15, title='Smoothed K=15')
+```
+- First plot: K=1 (each point’s class is determined by its single nearest neighbor, leading to very jagged boundaries).
+- Second plot: K=15 (class is decided by a larger neighborhood, resulting in smoother, more generalized boundaries).
+
+---
+
+### **Summary**
+
+- This code lets you **visualize how the KNN decision boundary changes with K**.
+- For small K, the boundary closely follows the data (can be noisy).
+- For large K, the boundary is smoother (less sensitive to noise, more general).
+
+This is a classic and valuable way to understand how KNN works and how the value of K affects its predictions!
+
+Sixth code:
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score
+
+Xtr, Xte, ytr, yte = train_test_split(Xm, ym_labels, test_size=0.3, random_state=42)
+K = 5
+y_pred = []
+for x in Xte:
+    pred, _, _ = knn_predict(Xtr, ytr, x, K=K)
+    y_pred.append(pred)
+acc = accuracy_score(yte, y_pred)
+prec = precision_score(yte, y_pred, pos_label='orange')
+rec = recall_score(yte, y_pred, pos_label='orange')
+print(f'K={K}: Accuracy={acc:.2f}, Precision={prec:.2f}, Recall={rec:.2f}')
+
+Here’s a step-by-step explanation of your code, which evaluates KNN classification performance on the "two moons" dataset:
+
+---
+
+### 1. **Import Scikit-learn Utilities**
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score
+```
+- **train_test_split:** Splits your data into training and testing sets.
+- **accuracy_score, precision_score, recall_score:** Standard metrics to evaluate classification results.
+
+---
+
+### 2. **Split the Data**
+
+```python
+Xtr, Xte, ytr, yte = train_test_split(Xm, ym_labels, test_size=0.3, random_state=42)
+```
+- **Xm:** Feature matrix of the moons dataset.
+- **ym_labels:** String labels ('orange' or 'blue').
+- **test_size=0.3:** 30% of data goes to the test set, 70% to training.
+- **random_state=42:** Ensures reproducibility.
+- **Xtr, ytr:** Training data and labels.
+- **Xte, yte:** Test data and labels.
+
+---
+
+### 3. **KNN Prediction on Test Set**
+
+```python
+K = 5
+y_pred = []
+for x in Xte:
+    pred, _, _ = knn_predict(Xtr, ytr, x, K=K)
+    y_pred.append(pred)
+```
+- **K = 5:** Number of neighbors for KNN.
+- **y_pred:** Empty list to hold predictions.
+- For each test point `x`:
+  - **knn_predict(Xtr, ytr, x, K=K):** Predict the class of `x` using KNN, trained on `Xtr`, `ytr`.
+  - Only the predicted label is used (`pred`).
+  - Append prediction to `y_pred`.
+
+---
+
+### 4. **Evaluate the Results**
+
+```python
+acc = accuracy_score(yte, y_pred)
+prec = precision_score(yte, y_pred, pos_label='orange')
+rec = recall_score(yte, y_pred, pos_label='orange')
+```
+- **accuracy_score:** Fraction of correct predictions.
+- **precision_score:** For the 'orange' class: what fraction of predicted 'orange' points are actually 'orange'.
+- **recall_score:** For the 'orange' class: what fraction of the actual 'orange' points were correctly predicted.
+
+---
+
+### 5. **Print the Results**
+
+```python
+print(f'K={K}: Accuracy={acc:.2f}, Precision={prec:.2f}, Recall={rec:.2f}')
+```
+- Prints all three evaluation metrics rounded to two decimal places, along with the value of K.
+
+---
+
+### **Summary**
+
+- You split your complex dataset into training and test parts.
+- For each test point, you predict its class using your custom KNN function.
+- You then calculate and print accuracy, precision, and recall for the 'orange' class.
+
+This process gives you a good sense of how well your KNN classifier performs on new, unseen data.
+
+Seventh code:
+y_pred_m = []
+for x in Xte:
+    pred, _, _ = knn_predict(Xtr, ytr, x, K=K, metric='manhattan')
+    y_pred_m.append(pred)
+acc_m = accuracy_score(yte, y_pred_m)
+print(f'Manhattan metric K={K}: Accuracy={acc_m:.2f}')
+
+Here is a step-by-step explanation of your code that evaluates KNN using the Manhattan distance metric:
+
+---
+
+### 1. Initialize Predictions List
+
+```python
+y_pred_m = []
+```
+- An empty list to store the predicted labels for each test sample when using the Manhattan metric.
+
+---
+
+### 2. Predict on Test Set Using Manhattan Distance
+
+```python
+for x in Xte:
+    pred, _, _ = knn_predict(Xtr, ytr, x, K=K, metric='manhattan')
+    y_pred_m.append(pred)
+```
+- For each test sample `x` in `Xte`:
+  - Calls your custom `knn_predict` function, passing the training data (`Xtr`, `ytr`), the test point `x`, the number of neighbors (`K`), and specifying the `'manhattan'` metric.
+  - Appends the predicted label (`pred`) to `y_pred_m`.
+
+---
+
+### 3. Compute Accuracy
+
+```python
+acc_m = accuracy_score(yte, y_pred_m)
+```
+- Compares the predicted labels (`y_pred_m`) to the true labels (`yte`) and computes the accuracy (the proportion of correct predictions).
+
+---
+
+### 4. Print Result
+
+```python
+print(f'Manhattan metric K={K}: Accuracy={acc_m:.2f}')
+```
+- Prints the accuracy for KNN classification using the Manhattan distance and the chosen value of K, rounded to two decimals.
+
+---
+
+### **Summary**
+
+This code evaluates your KNN implementation using the Manhattan distance (also known as L1 norm) and prints the classification accuracy on the test set. It allows you to compare the performance of different distance metrics (e.g., Euclidean vs. Manhattan) for your dataset and chosen value of K.
+
+Eighth code:
+import matplotlib.pyplot as plt
+points = np.array([[2,3],[1,2],[3,1],[1,0],[2,-1],[0,0]])
+labels = np.array([+1,+1,+1,-1,-1,-1])
+colors = ['C0' if y==1 else 'C1' for y in labels]
+plt.figure(figsize=(6,6))
+for i, (x,y) in enumerate(points):
+    plt.scatter(x, y, c=colors[i], s=100, marker='o' if labels[i]==1 else 's')
+    plt.text(x+0.05, y+0.1, f'$x_{{{i+1}}}$')
+plt.xlabel('$x_1$')
+plt.ylabel('$x_2$')
+plt.title('SVM Toy Dataset')
+plt.legend(['Class +1 (A)', 'Class -1 (B)'])
+plt.grid(True)
+plt.xlim(-0.5, 3.5)
+plt.ylim(-1.5, 3.5)
+plt.show()
+
+Here is a step-by-step explanation of your SVM toy dataset plotting code:
+
+---
+
+### 1. **Import matplotlib for plotting**
+```python
+import matplotlib.pyplot as plt
+```
+- This library is used to create static, animated, and interactive visualizations in Python.
+
+---
+
+### 2. **Set up the data points and labels**
+```python
+points = np.array([[2,3],[1,2],[3,1],[1,0],[2,-1],[0,0]])
+labels = np.array([+1,+1,+1,-1,-1,-1])
+```
+- **points**: A 2D numpy array containing 6 points in (x, y) format.
+- **labels**: A numpy array of class labels, where `+1` and `-1` represent two different classes.
+
+---
+
+### 3. **Assign colors based on class labels**
+```python
+colors = ['C0' if y==1 else 'C1' for y in labels]
+```
+- For each label, assign color `'C0'` (usually blue) for `+1` and `'C1'` (usually orange) for `-1`.
+
+---
+
+### 4. **Create the figure**
+```python
+plt.figure(figsize=(6,6))
+```
+- Sets the figure size to 6x6 inches.
+
+---
+
+### 5. **Plot each point and annotate**
+```python
+for i, (x,y) in enumerate(points):
+    plt.scatter(x, y, c=colors[i], s=100, marker='o' if labels[i]==1 else 's')
+    plt.text(x+0.05, y+0.1, f'$x_{{{i+1}}}$')
+```
+- Loops through each point and its index:
+  - **plt.scatter**: Plots the point using color from `colors`, size 100, and marker shape: circle (`'o'`) for class `+1`, square (`'s'`) for class `-1`.
+  - **plt.text**: Annotates the point slightly offset from its position, labeling it as \( x_{i+1} \) (LaTeX formatted).
+
+---
+
+### 6. **Add axis labels, title, legend, and grid**
+```python
+plt.xlabel('$x_1$')
+plt.ylabel('$x_2$')
+plt.title('SVM Toy Dataset')
+plt.legend(['Class +1 (A)', 'Class -1 (B)'])
+plt.grid(True)
+```
+- **xlabel/ylabel**: Axis labels using LaTeX for subscript.
+- **title**: Adds a plot title.
+- **legend**: Manual legend for the two classes.
+- **grid**: Adds a grid to the plot for visual aid.
+
+---
+
+### 7. **Set axis limits**
+```python
+plt.xlim(-0.5, 3.5)
+plt.ylim(-1.5, 3.5)
+```
+- Sets the x-axis and y-axis limits for better view and spacing.
+
+---
+
+### 8. **Show the plot**
+```python
+plt.show()
+```
+- Renders and displays the plot.
+
+---
+
+## **Summary**
+- This code creates a simple 2D plot of a small SVM toy dataset with two classes.
+- Points are colored and shaped based on their class label and annotated with their index.
+- The plot is labeled, titled, and includes a legend and grid for clarity. This visualization is useful for understanding how SVMs (Support Vector Machines) might separate two classes in a small dataset.
+
+Ninth code:
+# 2.1 Write out the constraints for each observation
+beta = np.array([1, -1])
+beta0 = 0
+constraints = []
+for i, (x, y) in enumerate(zip(points, labels)):
+    val = y * (np.dot(beta, x) + beta0)
+    constraints.append(val)
+    print(f"x_{i+1}: y={y}, value={val:.1f}, satisfied? {val >= 1}")
+
+Here is a step-by-step explanation of your code that calculates and prints the SVM constraints for each observation:
+
+---
+
+## 1. **Define SVM Parameters**
+
+```python
+beta = np.array([1, -1])
+beta0 = 0
+```
+- **beta:** The weight vector for the separating hyperplane (in this example, `[1, -1]`).
+- **beta0:** The bias or intercept term (here, `0`).
+
+---
+
+## 2. **Initialize Constraints List**
+
+```python
+constraints = []
+```
+- Empty list to store the constraint values for each observation.
+
+---
+
+## 3. **Loop Over Each Point and Label**
+
+```python
+for i, (x, y) in enumerate(zip(points, labels)):
+    val = y * (np.dot(beta, x) + beta0)
+    constraints.append(val)
+    print(f"x_{i+1}: y={y}, value={val:.1f}, satisfied? {val >= 1}")
+```
+- **enumerate(zip(points, labels)):** Loops through each point `x` and its label `y`, with index `i`.
+- **np.dot(beta, x) + beta0:** Calculates the value of the linear function for point `x`.
+- **y * (np.dot(beta, x) + beta0):** Computes the SVM constraint value for this observation.
+  - For SVMs, the constraint is: \( y_i (\beta^T x_i + \beta_0) \geq 1 \)
+- **constraints.append(val):** Stores the value for later use.
+- **print(...):** Prints for each observation:
+  - The observation index (starting from 1).
+  - The label \( y \).
+  - The computed constraint value (rounded to 1 decimal place).
+  - Whether the SVM constraint is satisfied (`True` if value ≥ 1).
+
+---
+
+## **Summary**
+
+- This code checks, for each point, whether the SVM margin constraint \( y_i (\beta^T x_i + \beta_0) \geq 1 \) is satisfied with your given \( \beta \) and \( \beta_0 \).
+- It prints the result for each point, showing the label, the computed value, and whether the constraint holds.
+
+Tenth code:
+beta = np.array([2, 2])
+beta0 = -4
+constraints = []
+for i, (x, y) in enumerate(zip(points, labels)):
+    val = y * (np.dot(beta, x) + beta0)
+    constraints.append(val)
+    print(f"x_{i+1}: y={y}, value={val:.1f}, satisfied? {val >= 1}")
+M = 1/np.linalg.norm(beta)
+print(f"Margin M = {M:.3f}")
+
+Here is a step-by-step explanation of your code, which checks SVM constraints and calculates the margin for a new hyperplane:
+
+---
+
+## 1. **Set SVM Hyperplane Parameters**
+
+```python
+beta = np.array([2, 2])
+beta0 = -4
+```
+- **beta:** The weight vector for the SVM decision boundary, here `[2, 2]`.
+- **beta0:** The intercept (bias) term, here `-4`.
+
+---
+
+## 2. **Initialize Constraint Storage**
+
+```python
+constraints = []
+```
+- An empty list to store the constraint values for each sample.
+
+---
+
+## 3. **Check SVM Constraints for Each Data Point**
+
+```python
+for i, (x, y) in enumerate(zip(points, labels)):
+    val = y * (np.dot(beta, x) + beta0)
+    constraints.append(val)
+    print(f"x_{i+1}: y={y}, value={val:.1f}, satisfied? {val >= 1}")
+```
+- For each data point `x` and its label `y`:
+  - **np.dot(beta, x) + beta0:** Calculates the decision value for point `x`.
+  - **y * (np.dot(beta, x) + beta0):** Computes the SVM constraint value.
+    - For SVMs, the constraint is \( y_i (\beta^T x_i + \beta_0) \geq 1 \).
+  - Stores the value in `constraints`.
+  - Prints the index, label, value, and whether the SVM constraint is satisfied (`True` if value ≥ 1).
+
+---
+
+## 4. **Calculate the SVM Margin**
+
+```python
+M = 1/np.linalg.norm(beta)
+print(f"Margin M = {M:.3f}")
+```
+- **np.linalg.norm(beta):** Computes the Euclidean norm (length) of vector `beta`.
+- The SVM margin is \( M = \frac{1}{\|\beta\|} \), which is the distance from the hyperplane to the closest point.
+- Prints the margin rounded to three decimals.
+
+---
+
+## **Summary**
+
+- The code checks if each point satisfies the SVM constraint for the specified hyperplane.
+- It prints the constraint value and whether it is satisfied for each point.
+- It calculates and prints the geometric margin \( M \), which represents the distance from the hyperplane to the closest support vector. 
+
+This helps you assess if the chosen hyperplane is a valid margin separator for your SVM dataset and how wide the margin is.
+
+Eleventh code:
+from sklearn.svm import SVC
+svm = SVC(kernel='linear', C=1e6)
+svm.fit(points, labels)
+print(f"Estimated beta (w): {svm.coef_}")
+print(f"Estimated intercept: {svm.intercept_}")
+# Plot decision boundary
+xx = np.linspace(-0.5, 3.5, 100)
+w = svm.coef_[0]
+b = svm.intercept_[0]
+yy = -(w[0]*xx + b)/w[1]
+plt.figure(figsize=(6,6))
+for i, (x,y) in enumerate(points):
+    plt.scatter(x[0], x[1], c='C0' if labels[i]==1 else 'C1', s=100, marker='o' if labels[i]==1 else 's')
+plt.plot(xx, yy, 'k--', label='SVM boundary')
+plt.xlabel('$x_1$')
+plt.ylabel('$x_2$')
+plt.title('SVM Decision Boundary')
+plt.legend()
+plt.xlim(-0.5, 3.5)
+plt.ylim(-1.5, 3.5)
+plt.show()
+
+Here’s a step-by-step explanation of your SVM code, which fits a linear SVM to a toy dataset and visualizes the decision boundary:
+
+---
+
+### 1. **Import SVM Classifier and Fit Model**
+
+```python
+from sklearn.svm import SVC
+svm = SVC(kernel='linear', C=1e6)
+svm.fit(points, labels)
+```
+- **SVC**: Support Vector Classification from scikit-learn.
+- **kernel='linear'**: Specifies a linear decision boundary.
+- **C=1e6**: Sets a very high penalty for misclassification, enforcing a hard margin (no violations).
+- **svm.fit(points, labels)**: Fits the SVM model to your data points and their class labels.
+
+---
+
+### 2. **Print SVM Parameters**
+
+```python
+print(f"Estimated beta (w): {svm.coef_}")
+print(f"Estimated intercept: {svm.intercept_}")
+```
+- **svm.coef_**: The normal vector `w` (beta) of the separating hyperplane.
+- **svm.intercept_**: The intercept (bias term) of the hyperplane.
+
+---
+
+### 3. **Calculate and Plot the Decision Boundary**
+
+```python
+xx = np.linspace(-0.5, 3.5, 100)
+w = svm.coef_[0]
+b = svm.intercept_[0]
+yy = -(w[0]*xx + b)/w[1]
+```
+- **xx**: 100 evenly spaced x-values from -0.5 to 3.5.
+- **w**: The coefficients of the SVM hyperplane.
+- **b**: The intercept.
+- **yy**: For each `xx`, computes the corresponding `y` on the decision boundary using the line equation:  
+  \( w_0 x + w_1 y + b = 0 \Rightarrow y = -(w_0 x + b)/w_1 \)
+
+---
+
+### 4. **Plot the Data and the Decision Boundary**
+
+```python
+plt.figure(figsize=(6,6))
+for i, (x,y) in enumerate(points):
+    plt.scatter(x[0], x[1], c='C0' if labels[i]==1 else 'C1', s=100, marker='o' if labels[i]==1 else 's')
+plt.plot(xx, yy, 'k--', label='SVM boundary')
+plt.xlabel('$x_1$')
+plt.ylabel('$x_2$')
+plt.title('SVM Decision Boundary')
+plt.legend()
+plt.xlim(-0.5, 3.5)
+plt.ylim(-1.5, 3.5)
+plt.show()
+```
+- **Plot each point**: Blue circles for class +1, orange squares for class -1.
+- **Plot the decision boundary**: Dashed black line.
+- **Labels and limits**: Sets axis labels, title, legend, and plot limits for clarity.
+- **Show plot**: Displays the visualization.
+
+---
+
+## **Summary**
+- The code fits a hard-margin linear SVM to a toy dataset and prints the learned hyperplane parameters.
+- It then plots the data points and the SVM’s decision boundary, helping you visualize how the SVM separates the two classes.
+
+If you want to also plot the margin lines or support vectors, let me know!
+
+Twelth code:
+from sklearn.svm import SVC
+import numpy as np
+import matplotlib.pyplot as plt
+
+svm = SVC(kernel='linear', C=1e6)
+svm.fit(points, labels)
+print(f"Estimated beta (w): {svm.coef_}")
+print(f"Estimated intercept: {svm.intercept_}")
+
+# Plot decision boundary
+xx = np.linspace(-0.5, 3.5, 100)
+w = svm.coef_[0]
+b = svm.intercept_[0]
+yy = -(w[0]*xx + b)/w[1]
+
+plt.figure(figsize=(6,6))
+for i, (x, y) in enumerate(points):
+    plt.scatter(x, y, c='C0' if labels[i]==1 else 'C1', s=100, marker='o' if labels[i]==1 else 's')
+plt.plot(xx, yy, 'k--', label='SVM boundary')
+plt.xlabel('$x_1$')
+plt.ylabel('$x_2$')
+plt.title('SVM Decision Boundary')
+plt.legend()
+plt.xlim(-0.5, 3.5)
+plt.ylim(-1.5, 3.5)
+plt.show()
+
+Certainly! Here is a **step-by-step explanation** of your SVM code, including what each part does and why:
+
+---
+
+### **Step 1: Import Libraries**
+
+```python
+from sklearn.svm import SVC
+import numpy as np
+import matplotlib.pyplot as plt
+```
+- **sklearn.svm.SVC**: The Support Vector Classifier from scikit-learn.
+- **numpy**: For numerical operations.
+- **matplotlib.pyplot**: For plotting.
+
+---
+
+### **Step 2: Fit the SVM Model**
+
+```python
+svm = SVC(kernel='linear', C=1e6)
+svm.fit(points, labels)
+```
+- **SVC(kernel='linear', C=1e6)**: Creates a linear SVM. Using a very high C (1,000,000) enforces a hard margin (no misclassification).
+- **svm.fit(points, labels)**: Trains the SVM using your input data (`points` as features, `labels` as target classes).
+
+---
+
+### **Step 3: Print Model Parameters**
+
+```python
+print(f"Estimated beta (w): {svm.coef_}")
+print(f"Estimated intercept: {svm.intercept_}")
+```
+- **svm.coef_**: The coefficients (vector **w**) of the separating hyperplane.
+- **svm.intercept_**: The intercept (bias term, **b**) of the hyperplane.
+- These together define the equation of the SVM decision boundary:  
+  \( w_0 x_1 + w_1 x_2 + b = 0 \)
+
+---
+
+### **Step 4: Prepare the Decision Boundary for Plotting**
+
+```python
+xx = np.linspace(-0.5, 3.5, 100)
+w = svm.coef_[0]
+b = svm.intercept_[0]
+yy = -(w[0]*xx + b)/w[1]
+```
+- **xx**: 100 evenly-spaced values between -0.5 and 3.5 (covers your plot range).
+- **w, b**: Extracts the learned coefficients and intercept.
+- **yy**: Computes the y-values for the decision boundary using the equation above.  
+  Rearranged: \( x_2 = -\frac{w_0 x_1 + b}{w_1} \)
+
+---
+
+### **Step 5: Plot the Data Points and Decision Boundary**
+
+```python
+plt.figure(figsize=(6,6))
+for i, (x, y) in enumerate(points):
+    plt.scatter(x, y, c='C0' if labels[i]==1 else 'C1', s=100, marker='o' if labels[i]==1 else 's')
+```
+- **plt.figure(figsize=(6,6))**: Sets the plot size.
+- **plt.scatter(...)**: Plots each point:
+  - **Color**: `'C0'` (blue) for class +1, `'C1'` (orange) for class -1.
+  - **Marker**: Circle (`'o'`) for +1, square (`'s'`) for -1.
+  - **Size**: 100.
+
+---
+
+```python
+plt.plot(xx, yy, 'k--', label='SVM boundary')
+```
+- **plt.plot(xx, yy, 'k--', ...)**: Plots the SVM decision boundary as a dashed black line.
+
+---
+
+```python
+plt.xlabel('$x_1$')
+plt.ylabel('$x_2$')
+plt.title('SVM Decision Boundary')
+plt.legend()
+plt.xlim(-0.5, 3.5)
+plt.ylim(-1.5, 3.5)
+plt.show()
+```
+- **Labels, title, legend**: Add context to the plot.
+- **xlim, ylim**: Set axis limits for a clear view.
+- **plt.show()**: Displays the plot.
+
+---
+
+## **What you see**
+- The plot shows your data points (each with its class and shape).
+- The SVM's learned decision boundary is shown as a dashed line.
+- This helps you visually confirm how the SVM separates your two classes.
+
+---
+
+**Optional:**  
+You can enhance the plot by also showing support vectors and margin lines. Let me know if you want to see how!
+
+Thirteenth code:
+# Add two new points
+X_soft = np.vstack([points, [[1,3],[3,-2]]])
+y_soft = np.hstack([labels, [+1,-1]])
+# Use previously found SVM parameters
+w = svm.coef_[0]
+b = svm.intercept_[0]
+
+def hinge_loss(w, b, X, y):
+    margins = y * (np.dot(X, w) + b)
+    xi = np.maximum(0, 1 - margins)
+    return xi, margins
+xi, margins = hinge_loss(w, b, X_soft, y_soft)
+for i, (m, s) in enumerate(zip(margins, xi)):
+    print(f"x_{i+1}: margin={m:.2f}, slack xi={s:.2f}, violation? {s > 0}")
+print(f"Total slack: {xi.sum():.2f}")
+
+Let’s break down your code and explain how it works step by step:
+
+---
+
+## **Step 1: Add Two New Points**
+
+```python
+X_soft = np.vstack([points, [[1,3],[3,-2]]])
+y_soft = np.hstack([labels, [+1,-1]])
+```
+- **X_soft**: Combines the original points with two new points: (1,3) with label +1 and (3,-2) with label −1.
+- **y_soft**: Combines the original labels with the new labels.
+
+---
+
+## **Step 2: Use Existing SVM Parameters**
+
+```python
+w = svm.coef_[0]
+b = svm.intercept_[0]
+```
+- **w**: The SVM’s weight vector (from your previously trained linear SVM).
+- **b**: The SVM’s intercept.
+
+---
+
+## **Step 3: Define the Hinge Loss Function**
+
+```python
+def hinge_loss(w, b, X, y):
+    margins = y * (np.dot(X, w) + b)
+    xi = np.maximum(0, 1 - margins)
+    return xi, margins
+```
+- **margins**: For each point, computes \( y_i(w^T x_i + b) \).
+- **xi (slack)**: For each point, computes the hinge loss: \( \xi_i = \max(0, 1 - \text{margin}) \).
+  - If margin ≥ 1: no loss, xi = 0.
+  - If margin < 1: xi > 0, indicating a violation (point is inside the margin or misclassified).
+
+---
+
+## **Step 4: Compute Hinge Loss and Margins for All Points**
+
+```python
+xi, margins = hinge_loss(w, b, X_soft, y_soft)
+```
+- Calculates the margin and slack variable for all 8 points (6 original, 2 new).
+
+---
+
+## **Step 5: Print Results for Each Point**
+
+```python
+for i, (m, s) in enumerate(zip(margins, xi)):
+    print(f"x_{i+1}: margin={m:.2f}, slack xi={s:.2f}, violation? {s > 0}")
+```
+- For each point, prints:
+  - The margin value,
+  - The slack variable xi,
+  - Whether there’s a violation (xi > 0).
+
+---
+
+## **Step 6: Print Total Slack**
+
+```python
+print(f"Total slack: {xi.sum():.2f}")
+```
+- Sums all slack variables.
+- This tells you the **total amount by which points violate the margin** (i.e., are not “correctly” classified with margin ≥ 1).
+
+---
+
+## **Summary**
+
+- You added two new points to your dataset and checked how well your previously learned SVM (hard-margin) parameters fit the new, larger dataset.
+- The **hinge loss** (slack variables xi) quantifies margin violations:  
+  - xi = 0: point is on the correct side, margin ≥ 1  
+  - xi > 0: point is inside the margin or on the wrong side
+- The **total slack** gives a sense of how much “soft margin” is needed if you were to allow violations.
+
+---
+
+**This approach is at the heart of soft-margin SVMs, where you allow some violations when perfect separation isn’t possible!**
+
+Fourteenth code:
+import numpy as np
+from sklearn.svm import SVC
+
+# Original dataset
+points = np.array([
+    [2,3],
+    [1,2],
+    [3,1],
+    [1,0],
+    [2,-1],
+    [0,0]
+])
+labels = np.array([+1, +1, +1, -1, -1, -1])
+
+# Add two new points
+X_soft = np.vstack([points, [ [1,3], [3,-2] ]])
+y_soft = np.hstack([labels, [+1, -1]])
+
+# Fit a hard-margin SVM (large C) to get beta and beta0 (for demonstration)
+svm = SVC(kernel='linear', C=1e6)
+svm.fit(points, labels)
+w = svm.coef_[0]
+b = svm.intercept_[0]
+
+# Compute hinge loss (slack variable) for each point
+def hinge_loss(w, b, X, y):
+    margins = y * (np.dot(X, w) + b)
+    xi = np.maximum(0, 1 - margins)
+    return xi, margins
+
+xi, margins = hinge_loss(w, b, X_soft, y_soft)
+
+# 3.1: Check for each observation if the point violates the soft-margin constraint
+print("Index | x1  x2 | y | margin | slack xi | Margin violation?")
+for i, (x, y, m, s) in enumerate(zip(X_soft, y_soft, margins, xi)):
+    print(f"{i+1:5d} | {x[0]:.1f} {x[1]:.1f} | {y:+d} | {m:6.2f} | {s:8.2f} | {'YES' if s > 0 else 'NO'}")
+print()
+
+# 3.2: When the observation is well classified, the slack variable xi is 0 (no violation).
+print("3.2: When well classified (margin >= 1), the slack variable xi = 0.\n")
+
+# 3.3: Identify points that violate the margin
+violations = np.where(xi > 0)[0]
+print(f"3.3: Points that violate the margin: {[i+1 for i in violations]}")
+
+# 3.4: Compute the total slack violation
+print(f"3.4: Total Slack: {xi.sum():.2f}")
+
+# 4. C parameter discussion
+print("\n4. Discussion on C parameter:")
+print("- Increasing C makes the SVM penalize slack variables more heavily, so the model tries harder to classify all points correctly, possibly at the cost of a smaller margin (risk of overfitting).")
+print("- Decreasing C allows more slack (margin violations), leading to a larger margin but possibly more misclassified points (better generalization on noisy data).")
+
+Here is a detailed, step-by-step explanation of your code and its output:
+
+---
+
+## **Step 1: Import Libraries and Prepare Data**
+
+```python
+import numpy as np
+from sklearn.svm import SVC
+
+points = np.array([
+    [2,3],
+    [1,2],
+    [3,1],
+    [1,0],
+    [2,-1],
+    [0,0]
+])
+labels = np.array([+1, +1, +1, -1, -1, -1])
+```
+- You import NumPy and scikit-learn’s SVC.
+- The toy dataset has 6 points in 2D, with 3 labeled `+1` and 3 labeled `-1`.
+
+---
+
+## **Step 2: Add Two New Points (For Soft Margin Example)**
+
+```python
+X_soft = np.vstack([points, [ [1,3], [3,-2] ]])
+y_soft = np.hstack([labels, [+1, -1]])
+```
+- Add \([1,3]\) with label `+1` and \([3,-2]\) with label `-1` to create a more challenging classification problem.
+
+---
+
+## **Step 3: Fit a Hard-Margin SVM**
+
+```python
+svm = SVC(kernel='linear', C=1e6)
+svm.fit(points, labels)
+w = svm.coef_[0]
+b = svm.intercept_[0]
+```
+- Train a **hard-margin SVM** (very large `C`) on the original 6 points (not including the two new ones).
+- Extract the learned coefficients (`w`) and intercept (`b`).
+
+---
+
+## **Step 4: Define and Compute Hinge Loss / Slack Variables**
+
+```python
+def hinge_loss(w, b, X, y):
+    margins = y * (np.dot(X, w) + b)
+    xi = np.maximum(0, 1 - margins)
+    return xi, margins
+
+xi, margins = hinge_loss(w, b, X_soft, y_soft)
+```
+- For each point, compute the **margin**: \( y_i(w^T x_i + b) \)
+- The **slack variable** (\(\xi_i\)) is \( \max(0, 1 - \text{margin}) \):
+  - If margin ≥ 1: xi = 0 (no violation)
+  - If margin < 1: xi > 0 (point violates the margin, possibly misclassified)
+
+---
+
+## **Step 5: Print Table of Results**
+
+```python
+print("Index | x1  x2 | y | margin | slack xi | Margin violation?")
+for i, (x, y, m, s) in enumerate(zip(X_soft, y_soft, margins, xi)):
+    print(f"{i+1:5d} | {x[0]:.1f} {x[1]:.1f} | {y:+d} | {m:6.2f} | {s:8.2f} | {'YES' if s > 0 else 'NO'}")
+print()
+```
+- For each point, prints:
+  - Index
+  - Coordinates \((x_1, x_2)\)
+  - Label \(y\)
+  - Margin value
+  - Slack variable xi
+  - Whether this point violates the margin
+
+---
+
+## **Step 6: Note About Well-Classified Points**
+
+```python
+print("3.2: When well classified (margin >= 1), the slack variable xi = 0.\n")
+```
+- If a point is “well classified” (margin ≥ 1), then slack variable is zero.
+
+---
+
+## **Step 7: List Points with Margin Violations**
+
+```python
+violations = np.where(xi > 0)[0]
+print(f"3.3: Points that violate the margin: {[i+1 for i in violations]}")
+```
+- Finds indices of points where xi > 0.
+- Prints their indices (1-based).
+
+---
+
+## **Step 8: Compute Total Slack**
+
+```python
+print(f"3.4: Total Slack: {xi.sum():.2f}")
+```
+- Sums all slack variables: the total amount by which all points violate the margin.
+
+---
+
+## **Step 9: Discussion on C Parameter**
+
+```python
+print("\n4. Discussion on C parameter:")
+print("- Increasing C makes the SVM penalize slack variables more heavily, so the model tries harder to classify all points correctly, possibly at the cost of a smaller margin (risk of overfitting).")
+print("- Decreasing C allows more slack (margin violations), leading to a larger margin but possibly more misclassified points (better generalization on noisy data).")
+```
+- Explains the role of the `C` parameter in SVM:
+  - **Large C**: Hard margin, less tolerance for misclassification, can overfit.
+  - **Small C**: Soft margin, allows more violations, better for noisy data.
+
+---
+
+## **Summary Table Example Output**
+
+```
+Index | x1  x2 | y | margin | slack xi | Margin violation?
+    1 | 2.0 3.0 | +1 |   3.07 |    0.00 | NO
+    2 | 1.0 2.0 | +1 |   1.00 |    0.00 | NO
+    3 | 3.0 1.0 | +1 |   2.00 |    0.00 | NO
+    4 | 1.0 0.0 | -1 |  -3.07 |    4.07 | YES
+    5 | 2.0 -1.0 | -1 |  -1.00 |    2.00 | YES
+    6 | 0.0 0.0 | -1 |  -1.00 |    2.00 | YES
+    7 | 1.0 3.0 | +1 |   1.57 |    0.00 | NO
+    8 | 3.0 -2.0 | -1 |  -3.00 |    4.00 | YES
+```
+(Your actual values may differ, this is illustrative.)
+
+---
+
+**In summary:**  
+You checked, for each point (including new ones), whether it satisfies the SVM margin constraint. You identified violations, calculated total slack, and discussed how the SVM `C` parameter controls the trade-off between margin size and classification accuracy.
